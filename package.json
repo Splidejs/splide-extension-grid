@@ -1,0 +1,39 @@
+{
+  "name": "@splidejs/splide-extension-grid",
+  "version": "0.1.0",
+  "description": "The extension of Splide for creating grid.",
+  "author": "Naotoshi Fujita",
+  "license": "MIT",
+  "main": "dist/js/splide-extension-rows.js",
+  "keywords": [
+    "splide",
+    "slider",
+    "carousel",
+    "slideshow",
+    "lightweight",
+    "touch",
+    "responsive",
+    "grid",
+    "row",
+    "col"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Splidejs/splide-extension-grid.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Splidejs/splide-extension-grid/issues"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.8.0",
+    "@babel/preset-env": "^7.8.0",
+    "babel-loader": "^8.0.6",
+    "gulp": "^4.0.2",
+    "uglifyjs-webpack-plugin": "^2.2.0",
+    "webpack": "^4.41.5",
+    "webpack-stream": "^5.2.1"
+  },
+  "scripts": {
+    "build:js": "gulp build:js"
+  }
+}
