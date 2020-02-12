@@ -8,8 +8,8 @@
 /**
  * Apply styles to the given element.
  *
- * @param {Element} elm    - An element where styles are applied.
- * @param {Object}  styles - Object containing styles.
+ * @param {HTMLElement} elm    - An element where styles are applied.
+ * @param {Object}      styles - Object containing styles.
  */
 export function applyStyle( elm, styles ) {
 	Object.keys( styles ).forEach( key => {

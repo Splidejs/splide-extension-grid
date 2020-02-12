@@ -107,15 +107,21 @@ export default ( Splide, Components ) => {
 		 */
 		destroy() {
 			if ( originalSlides ) {
-				const list = Elements.list;
-				list.innerHTML  = '';
-				Elements.slides = originalSlides;
+				const list     = Elements.list;
+				const fragment = document.createDocumentFragment();
+
+				// Move slides to the fragment temporarily.
+				originalSlides.forEach( slide => { fragment.appendChild( slide ) } );
+
+				list.innerHTML = '';
 
 				originalSlides.forEach( slide => {
 					list.appendChild( slide );
 					slide.classList.remove( colClass );
 					slide.removeAttribute( 'style' );
 				} );
+
+				Elements.slides = originalSlides;
 
 				this.toggleRootClassModifiers( 'grid', true );
 
@@ -149,9 +155,8 @@ export default ( Splide, Components ) => {
 		 */
 		init() {
 			if ( originalSlides.length ) {
-				Elements.list.innerHTML = '';
-
 				Elements.slides = this.buildGrid();
+
 				originalSlides.forEach( slide => { slide.removeAttribute( 'id' ) } );
 
 				Splide.refresh();
@@ -196,6 +201,8 @@ export default ( Splide, Components ) => {
 						height        : '100%',
 						[ marginProp ]: `${ unit( colGap ) }`,
 					} );
+
+					slide.removeAttribute( GRID_WIDTH_DATA_ATTRIBUTE_NAME );
 
 					this.cover( slide );
 				} );
@@ -245,7 +252,7 @@ export default ( Splide, Components ) => {
 						outerSlide.classList.add( Splide.classes.slide );
 
 						outerSlides.push( outerSlide );
-						Elements.list.appendChild( outerSlide );
+						// Elements.list.appendChild( outerSlide );
 					}
 
 					rowElm = this.createRow( rows );
@@ -253,7 +260,7 @@ export default ( Splide, Components ) => {
 				}
 
 				colElm = this.createCol( cols, slide );
-				rowElm.append( colElm );
+				rowElm.appendChild( colElm );
 
 				c++;
 
@@ -267,6 +274,12 @@ export default ( Splide, Components ) => {
 					c = 0;
 				}
 			}
+
+			Elements.list.innerHTML = '';
+
+			outerSlides.forEach( slide => {
+				Elements.list.appendChild( slide );
+			} );
 
 			return outerSlides;
 		},

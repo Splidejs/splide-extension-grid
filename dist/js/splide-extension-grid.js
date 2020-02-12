@@ -112,8 +112,8 @@ __webpack_require__.r(__webpack_exports__);
 /**
  * Apply styles to the given element.
  *
- * @param {Element} elm    - An element where styles are applied.
- * @param {Object}  styles - Object containing styles.
+ * @param {HTMLElement} elm    - An element where styles are applied.
+ * @param {Object}      styles - Object containing styles.
  */
 function applyStyle(elm, styles) {
   Object.keys(styles).forEach(function (key) {
@@ -310,13 +310,18 @@ var GRID_WIDTH_DATA_ATTRIBUTE_NAME = 'data-splide-grid-width';
     destroy: function destroy() {
       if (originalSlides) {
         var list = Elements.list;
+        var fragment = document.createDocumentFragment(); // Move slides to the fragment temporarily.
+
+        originalSlides.forEach(function (slide) {
+          fragment.appendChild(slide);
+        });
         list.innerHTML = '';
-        Elements.slides = originalSlides;
         originalSlides.forEach(function (slide) {
           list.appendChild(slide);
           slide.classList.remove(colClass);
           slide.removeAttribute('style');
         });
+        Elements.slides = originalSlides;
         this.toggleRootClassModifiers('grid', true);
         Splide.refresh();
       }
@@ -351,7 +356,6 @@ var GRID_WIDTH_DATA_ATTRIBUTE_NAME = 'data-splide-grid-width';
      */
     init: function init() {
       if (originalSlides.length) {
-        Elements.list.innerHTML = '';
         Elements.slides = this.buildGrid();
         originalSlides.forEach(function (slide) {
           slide.removeAttribute('id');
@@ -403,6 +407,7 @@ var GRID_WIDTH_DATA_ATTRIBUTE_NAME = 'data-splide-grid-width';
             width: slide.getAttribute(GRID_WIDTH_DATA_ATTRIBUTE_NAME),
             height: '100%'
           }, _applyStyle[marginProp] = "" + unit(colGap), _applyStyle));
+          slide.removeAttribute(GRID_WIDTH_DATA_ATTRIBUTE_NAME);
 
           _this2.cover(slide);
         });
@@ -460,8 +465,7 @@ var GRID_WIDTH_DATA_ATTRIBUTE_NAME = 'data-splide-grid-width';
           if (r === 0) {
             outerSlide = document.createElement(slide.tagName);
             outerSlide.classList.add(Splide.classes.slide);
-            outerSlides.push(outerSlide);
-            Elements.list.appendChild(outerSlide);
+            outerSlides.push(outerSlide); // Elements.list.appendChild( outerSlide );
           }
 
           rowElm = this.createRow(rows);
@@ -469,7 +473,7 @@ var GRID_WIDTH_DATA_ATTRIBUTE_NAME = 'data-splide-grid-width';
         }
 
         colElm = this.createCol(cols, slide);
-        rowElm.append(colElm);
+        rowElm.appendChild(colElm);
         c++;
 
         if (c >= cols) {
@@ -483,6 +487,10 @@ var GRID_WIDTH_DATA_ATTRIBUTE_NAME = 'data-splide-grid-width';
         }
       }
 
+      Elements.list.innerHTML = '';
+      outerSlides.forEach(function (slide) {
+        Elements.list.appendChild(slide);
+      });
       return outerSlides;
     },
 
