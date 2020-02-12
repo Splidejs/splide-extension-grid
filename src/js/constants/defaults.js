@@ -21,8 +21,8 @@ export const DEFAULTS = {
 	cols: 1,
 
 	/**
-	 * Set of dimensions(rows and cols).
-	 * If the value is [ [ 1, 1 ], [ 2, 2 ] ], the first slide will be 1x1 and next all slides wll be 2x2.
+	 * Collection of dimensions(rows and cols) as an array.
+	 * If the value is [ [ 1, 1 ], [ 2, 2 ] ], the first slide will be 1x1 and next all slides will be 2x2.
 	 * "rows" and "cols" options are ignored when this option is provided.
 	 *
 	 * @type {Array[]|boolean}
