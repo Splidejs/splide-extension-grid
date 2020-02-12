@@ -3,7 +3,7 @@ This is an extension of the [Splide](https://github.com/Splidejs/splide) slider 
 
 ![Sample Slider](./images/sample01.png)
 
-* [Demo and Document](https://splidejs.com/grid/)
+* [Demo and Document](https://splidejs.com/extension-grid/)
 
 ## Installation
 ### NPM(Recommended)
