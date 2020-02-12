@@ -34,12 +34,12 @@ This is an extension of the [Splide](https://github.com/Splidejs/splide) slider 
 Pass `grid` as an object to options:
 ```javascript
 new Splide( '#splide', { grid: {
-	rows: 2,
-	cols: 2,
-	gap : {
-		row: '1rem',
-		col: '1.5rem',
-	}
+  rows: 2,
+  cols: 2,
+  gap : {
+    row: '1rem',
+    col: '1.5rem',
+  }
 } } ).mount( { Grid } );
 ```
 
