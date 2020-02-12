@@ -173,6 +173,15 @@ var DEFAULTS = {
   cols: 1,
 
   /**
+   * Set of dimensions(rows and cols).
+   * If the value is [ [ 1, 1 ], [ 2, 2 ] ], the first slide will be 1x1 and next all slides wll be 2x2.
+   * "rows" and "cols" options are ignored when this option is provided.
+   *
+   * @type {Array[]|boolean}
+   */
+  dimensions: false,
+
+  /**
    * Gaps for rows or cols.
    *
    * @example
@@ -196,6 +205,13 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
  */
 
 
+/**
+ * The data attribute name for temporarily saving grid width.
+ *
+ * @type {string}
+ */
+
+var GRID_WIDTH_DATA_ATTRIBUTE_NAME = 'data-splide-grid-width';
 /**
  * The extension component for grid.
  *
@@ -325,22 +341,25 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
     shouldActivate: function shouldActivate() {
       var _Splide$options$grid = Splide.options.grid,
           rows = _Splide$options$grid.rows,
-          cols = _Splide$options$grid.cols;
-      return rows > 1 || cols > 1;
+          cols = _Splide$options$grid.cols,
+          dimensions = _Splide$options$grid.dimensions;
+      return rows > 1 || cols > 1 || dimensions;
     },
 
     /**
      * Initialization.
      */
     init: function init() {
-      originalSlides.forEach(function (slide) {
-        slide.removeAttribute('id');
-      });
-      Elements.list.innerHTML = '';
-      Elements.slides = this.buildGrid();
-      Splide.refresh();
-      this.toggleRootClassModifiers('grid');
-      this.setStyles();
+      if (originalSlides.length) {
+        Elements.list.innerHTML = '';
+        Elements.slides = this.buildGrid();
+        originalSlides.forEach(function (slide) {
+          slide.removeAttribute('id');
+        });
+        Splide.refresh();
+        this.toggleRootClassModifiers('grid');
+        this.setStyles();
+      }
     },
 
     /**
@@ -378,18 +397,10 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
         each(Slide.slide.querySelectorAll("." + colClass), function (slide) {
           var _applyStyle;
 
-          var _options = options,
-              cols = _options.cols,
-              _options$gap$col = _options.gap.col,
+          var _options$gap$col = options.gap.col,
               colGap = _options$gap$col === void 0 ? 0 : _options$gap$col;
-          var width = "calc( " + 100 / cols + "%";
-
-          if (colGap) {
-            width += " - " + unit(colGap) + " * " + (cols - 1) / cols + " )";
-          }
-
           applyStyle(slide, (_applyStyle = {
-            width: width,
+            width: slide.getAttribute(GRID_WIDTH_DATA_ATTRIBUTE_NAME),
             height: '100%'
           }, _applyStyle[marginProp] = "" + unit(colGap), _applyStyle));
 
@@ -428,46 +439,91 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
 
     /**
      * Build grid.
+     * Create outerSlide, row, col elements and push them to specific arrays.
      *
-     * @return {Element[]} - New slide elements.
+     * @reeturn {Element[]} - Created outer slide elements.
      */
     buildGrid: function buildGrid() {
-      var _this3 = this;
+      var outerSlides = [];
+      var outerSlide, rowElm, colElm;
+      var r = 0,
+          c = 0;
 
-      var _options2 = options,
-          rows = _options2.rows,
-          cols = _options2.cols;
-      var newSlides = [];
-      var newSlide, rowElm;
-      originalSlides.forEach(function (slide, index) {
-        if (index % (rows * cols) === 0) {
-          newSlide = document.createElement(slide.tagName);
-          newSlide.classList.add(Splide.classes.slide);
-          newSlides.push(newSlide);
-          Elements.list.appendChild(newSlide);
+      for (var i = 0; i < originalSlides.length; i++) {
+        var _this$getDimension = this.getDimension(i),
+            rows = _this$getDimension.rows,
+            cols = _this$getDimension.cols;
+
+        var slide = originalSlides[i];
+
+        if (c === 0) {
+          if (r === 0) {
+            outerSlide = document.createElement(slide.tagName);
+            outerSlide.classList.add(Splide.classes.slide);
+            outerSlides.push(outerSlide);
+            Elements.list.appendChild(outerSlide);
+          }
+
+          rowElm = this.createRow(rows);
+          outerSlide.appendChild(rowElm);
         }
 
-        if (index % cols === 0) {
-          rowElm = _this3.createRow();
-          newSlide.appendChild(rowElm);
+        colElm = this.createCol(cols, slide);
+        rowElm.append(colElm);
+        c++;
+
+        if (c >= cols) {
+          r++;
+          c = 0;
         }
 
-        slide.classList.add(colClass);
-        rowElm.append(slide);
-      });
-      return newSlides;
+        if (r >= rows) {
+          r = 0;
+          c = 0;
+        }
+      }
+
+      return outerSlides;
+    },
+
+    /**
+     * Return dimension(rows and cols) according to the given index.
+     *
+     * @param {number} index - Slide index.
+     *
+     * @return {Object} - An object containing rows and cols.
+     */
+    getDimension: function getDimension(index) {
+      var _options = options,
+          rows = _options.rows,
+          cols = _options.cols;
+      var total = 0;
+
+      if (options.dimensions) {
+        each(options.dimensions, function (dimension) {
+          rows = dimension[0] || 1;
+          cols = dimension[1] || 1;
+          total += rows * cols;
+          return index < total;
+        });
+      }
+
+      return {
+        rows: rows,
+        cols: cols
+      };
     },
 
     /**
      * Create an element for a row.
      *
+     * @param {number} rows - Number of rows.
+     *
      * @return {Element} - A created element.
      */
-    createRow: function createRow() {
-      var _options3 = options,
-          rows = _options3.rows,
-          _options3$gap$row = _options3.gap.row,
-          rowGap = _options3$gap$row === void 0 ? 0 : _options3$gap$row;
+    createRow: function createRow(rows) {
+      var _options$gap$row = options.gap.row,
+          rowGap = _options$gap$row === void 0 ? 0 : _options$gap$row;
       var slide = originalSlides[0];
       var rowElm = document.createElement(slide.tagName.toLowerCase() === 'li' ? 'ul' : 'div');
       rowElm.classList.add(rowClass);
@@ -484,6 +540,30 @@ function _extends() { _extends = Object.assign || function (target) { for (var i
         padding: '0'
       });
       return rowElm;
+    },
+
+    /**
+     * Create an element for a col.
+     * Currently use the given slide itself as a col element.
+     *
+     * @param {number}  cols  - Number of cols.
+     * @param {Element} slide - A slide element.
+     *
+     * @return {Element} - A created element.
+     */
+    createCol: function createCol(cols, slide) {
+      var _options2 = options,
+          _options2$gap$col = _options2.gap.col,
+          colGap = _options2$gap$col === void 0 ? 0 : _options2$gap$col;
+      var width = "calc( " + 100 / cols + "%";
+
+      if (colGap) {
+        width += " - " + unit(colGap) + " * " + (cols - 1) / cols + " )";
+      }
+
+      slide.classList.add(colClass);
+      slide.setAttribute(GRID_WIDTH_DATA_ATTRIBUTE_NAME, width);
+      return slide;
     },
 
     /**

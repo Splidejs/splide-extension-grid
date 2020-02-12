@@ -8,6 +8,13 @@
 import { applyStyle, each, unit } from "./utils";
 import { DEFAULTS } from "./constants/defaults";
 
+/**
+ * The data attribute name for temporarily saving grid width.
+ *
+ * @type {string}
+ */
+const GRID_WIDTH_DATA_ATTRIBUTE_NAME = 'data-splide-grid-width';
+
 
 /**
  * The extension component for grid.
@@ -133,25 +140,25 @@ export default ( Splide, Components ) => {
 		 * @return {boolean} - True if th
 		 */
 		shouldActivate() {
-			const { rows, cols } =  Splide.options.grid;
-			return rows > 1 || cols > 1;
+			const { rows, cols, dimensions } =  Splide.options.grid;
+			return rows > 1 || cols > 1 || dimensions;
 		},
 
 		/**
 		 * Initialization.
 		 */
 		init() {
-			originalSlides.forEach( slide => {
-				slide.removeAttribute( 'id' );
-			} );
+			if ( originalSlides.length ) {
+				Elements.list.innerHTML = '';
 
-			Elements.list.innerHTML = '';
-			Elements.slides = this.buildGrid();
+				Elements.slides = this.buildGrid();
+				originalSlides.forEach( slide => { slide.removeAttribute( 'id' ) } );
 
-			Splide.refresh();
+				Splide.refresh();
 
-			this.toggleRootClassModifiers( 'grid' );
-			this.setStyles();
+				this.toggleRootClassModifiers( 'grid' );
+				this.setStyles();
+			}
 		},
 
 		/**
@@ -182,15 +189,10 @@ export default ( Splide, Components ) => {
 				const marginProp = Components.Layout.margin;
 
 				each( Slide.slide.querySelectorAll( `.${ colClass }` ), slide => {
-					const { cols, gap: { col: colGap = 0 } } = options;
-					let width = `calc( ${ 100 / cols }%`;
-
-					if ( colGap ) {
-						width += ` - ${ unit( colGap ) } * ${ ( cols - 1 ) / cols } )`;
-					}
+					const { col: colGap = 0 } = options.gap;
 
 					applyStyle( slide, {
-						width,
+						width         : slide.getAttribute( GRID_WIDTH_DATA_ATTRIBUTE_NAME ),
 						height        : '100%',
 						[ marginProp ]: `${ unit( colGap ) }`,
 					} );
@@ -224,43 +226,85 @@ export default ( Splide, Components ) => {
 
 		/**
 		 * Build grid.
+		 * Create outerSlide, row, col elements and push them to specific arrays.
 		 *
-		 * @return {Element[]} - New slide elements.
+		 * @reeturn {Element[]} - Created outer slide elements.
 		 */
 		buildGrid() {
-			const { rows, cols } = options;
-			const newSlides = [];
+			const outerSlides = [];
+			let outerSlide, rowElm, colElm;
+			let r = 0, c = 0;
 
-			let newSlide, rowElm;
+			for ( let i = 0; i < originalSlides.length; i++ ) {
+				const { rows, cols } = this.getDimension( i );
+				const slide = originalSlides[ i ];
 
-			originalSlides.forEach( ( slide, index ) => {
-				if ( index % ( rows * cols ) === 0 ) {
-					newSlide = document.createElement( slide.tagName );
-					newSlide.classList.add( Splide.classes.slide );
+				if ( c === 0 ) {
+					if ( r === 0 ) {
+						outerSlide = document.createElement( slide.tagName );
+						outerSlide.classList.add( Splide.classes.slide );
 
-					newSlides.push( newSlide );
-					Elements.list.appendChild( newSlide );
+						outerSlides.push( outerSlide );
+						Elements.list.appendChild( outerSlide );
+					}
+
+					rowElm = this.createRow( rows );
+					outerSlide.appendChild( rowElm );
 				}
 
-				if ( index % cols === 0 ) {
-					rowElm = this.createRow();
-					newSlide.appendChild( rowElm );
+				colElm = this.createCol( cols, slide );
+				rowElm.append( colElm );
+
+				c++;
+
+				if ( c >= cols ) {
+					r++;
+					c = 0;
 				}
 
-				slide.classList.add( colClass );
-				rowElm.append( slide );
-			} );
+				if ( r >= rows ) {
+					r = 0;
+					c = 0;
+				}
+			}
 
-			return newSlides;
+			return outerSlides;
+		},
+
+		/**
+		 * Return dimension(rows and cols) according to the given index.
+		 *
+		 * @param {number} index - Slide index.
+		 *
+		 * @return {Object} - An object containing rows and cols.
+		 */
+		getDimension( index ) {
+			let { rows, cols } = options;
+			let total = 0;
+
+			if ( options.dimensions ) {
+				each( options.dimensions, dimension => {
+					rows = dimension[0] || 1;
+					cols = dimension[1] || 1;
+
+					total += rows * cols;
+
+					return index < total;
+				} );
+			}
+
+			return { rows, cols };
 		},
 
 		/**
 		 * Create an element for a row.
 		 *
+		 * @param {number} rows - Number of rows.
+		 *
 		 * @return {Element} - A created element.
 		 */
-		createRow() {
-			const { rows, gap: { row: rowGap = 0 } } = options;
+		createRow( rows ) {
+			const { row: rowGap = 0 } = options.gap;
 			const slide  = originalSlides[0];
 			const rowElm = document.createElement( slide.tagName.toLowerCase() === 'li' ? 'ul' : 'div' );
 
@@ -280,6 +324,29 @@ export default ( Splide, Components ) => {
 			} );
 
 			return rowElm;
+		},
+
+		/**
+		 * Create an element for a col.
+		 * Currently use the given slide itself as a col element.
+		 *
+		 * @param {number}  cols  - Number of cols.
+		 * @param {Element} slide - A slide element.
+		 *
+		 * @return {Element} - A created element.
+		 */
+		createCol( cols, slide ) {
+			const { gap: { col: colGap = 0 } } = options;
+			let width = `calc( ${ 100 / cols }%`;
+
+			if ( colGap ) {
+				width += ` - ${ unit( colGap ) } * ${ ( cols - 1 ) / cols } )`;
+			}
+
+			slide.classList.add( colClass );
+			slide.setAttribute( GRID_WIDTH_DATA_ATTRIBUTE_NAME, width );
+
+			return slide;
 		},
 
 		/**
