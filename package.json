@@ -29,6 +29,7 @@
     "@babel/preset-env": "^7.9.0",
     "babel-loader": "^8.1.0",
     "gulp": "^4.0.2",
+    "serialize-javascript": "^3.0.0",
     "uglifyjs-webpack-plugin": "^2.2.0",
     "webpack": "^4.42.1",
     "webpack-stream": "^5.2.1"
