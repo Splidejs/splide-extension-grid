@@ -222,7 +222,7 @@ var GRID_WIDTH_DATA_ATTRIBUTE_NAME = 'data-splide-grid-width';
  * @return {Object} - Extension object.
  */
 
-/* harmony default export */ var splide_extension_grid = (function (Splide, Components) {
+/* harmony default export */ var splide_extension_grid = __webpack_exports__["default"] = (function (Splide, Components) {
   /**
    * Hold the latest grid options.
    * 
@@ -589,17 +589,6 @@ var GRID_WIDTH_DATA_ATTRIBUTE_NAME = 'data-splide-grid-width';
   };
   return Grid;
 });
-// CONCATENATED MODULE: ./build/global/global.js
-/**
- * Set the Grid extension to the global object.
- *
- * @author    Naotoshi Fujita
- * @copyright Naotoshi Fujita. All rights reserved.
- */
-
-window.splide = window.splide || {};
-window.splide.Extensions = window.splide.Extensions || {};
-window.splide.Extensions.Grid = splide_extension_grid;
 
 /***/ })
 /******/ ]);

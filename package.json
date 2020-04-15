@@ -1,6 +1,6 @@
 {
   "name": "@splidejs/splide-extension-grid",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "The extension of Splide for creating grid.",
   "author": "Naotoshi Fujita",
   "license": "MIT",
