@@ -1,21 +1,10 @@
+const config = require( '../global/config' );
+
 module.exports = {
-	entry: './src/js/splide-extension-grid.js',
+	...config,
 	output: {
-		filename     : 'splide-extension-grid.js',
+		filename     : 'splide-extension-grid.esm.js',
 		library      : 'Splide',
 		libraryTarget: 'umd',
 	},
-	module: {
-		rules: [
-			{
-				test   : /.js$/,
-				loader : 'babel-loader',
-				exclude: /node_modules/,
-			},
-		],
-	},
-	optimization: {
-		minimize: false,
-	},
-	mode: 'production',
 };

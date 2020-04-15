@@ -1,10 +1,11 @@
 {
   "name": "@splidejs/splide-extension-grid",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "The extension of Splide for creating grid.",
   "author": "Naotoshi Fujita",
   "license": "MIT",
-  "main": "dist/js/splide-extension-rows.js",
+  "main": "dist/js/splide-extension-grid.js",
+  "module": "dist/js/splide-extension-grid.esm.js",
   "keywords": [
     "splide",
     "slider",
