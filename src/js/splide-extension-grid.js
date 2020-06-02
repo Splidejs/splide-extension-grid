@@ -373,6 +373,24 @@ export default ( Splide, Components ) => {
 				slide.setAttribute( 'tabindex', isVisible ? 0 : -1 );
 			} );
 		},
+
+		/**
+		 * Return generated class name for rows.
+		 *
+		 * @return {string} - Class name for rows.
+		 */
+		get rowClass() {
+			return rowClass;
+		},
+
+		/**
+		 * Return generated class name for cols.
+		 *
+		 * @return {string} - Class name for cols.
+		 */
+		get colClass() {
+			return colClass;
+		},
 	};
 
 	return Grid;

@@ -585,7 +585,26 @@ var GRID_WIDTH_DATA_ATTRIBUTE_NAME = 'data-splide-grid-width';
       each(Slide.slide.querySelectorAll("." + colClass), function (slide) {
         slide.setAttribute('tabindex', isVisible ? 0 : -1);
       });
+    },
+
+    /**
+     * Return generated class name for rows.
+     *
+     * @return {string} - Class name for rows.
+     */
+    get rowClass() {
+      return rowClass;
+    },
+
+    /**
+     * Return generated class name for cols.
+     *
+     * @return {string} - Class name for cols.
+     */
+    get colClass() {
+      return colClass;
     }
+
   };
   return Grid;
 });
