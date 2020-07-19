@@ -26,13 +26,13 @@
     "url": "https://github.com/Splidejs/splide-extension-grid/issues"
   },
   "devDependencies": {
-    "@babel/core": "^7.9.0",
-    "@babel/preset-env": "^7.9.0",
+    "@babel/core": "^7.10.5",
+    "@babel/preset-env": "^7.10.4",
     "babel-loader": "^8.1.0",
     "gulp": "^4.0.2",
-    "serialize-javascript": "^3.0.0",
+    "serialize-javascript": "^4.0.0",
     "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^4.42.1",
+    "webpack": "^4.43.0",
     "webpack-stream": "^5.2.1"
   },
   "scripts": {
