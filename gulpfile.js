@@ -1,37 +1,9 @@
-'use strict';
+const { parallel } = require( 'gulp' );
+const { develop } = require( './gulp/develop' );
+const { buildScript, buildModule } = require( './gulp/build-script' );
 
-/*
- * Dependencies.
- */
-const gulp          = require( 'gulp' );
-const webpackStream = require( 'webpack-stream' );
 
-/*
- * Webpack config paths.
- */
-const js = {
-	global: {
-		path: './build/global/config',
-		dest: './dist/js',
-	},
-	minified: {
-		path: './build/global/config-min',
-		dest: './dist/js',
-	},
-	module: {
-		path: './build/module/config',
-		dest: './dist/js',
-	},
-};
-
-/*
- * Build a script file.
- */
-gulp.task( 'build:js', done => {
-	Object.values( js ).forEach( settings => {
-		webpackStream( { config: require( settings.path ) } )
-			.pipe( gulp.dest( settings.dest ) );
-	} );
-
-	done();
-} );
+exports[ 'develop' ]      = develop;
+exports[ 'build:js' ]     = buildScript;
+exports[ 'build:module' ] = buildModule;
+exports[ 'build:all' ]    = parallel( buildScript, buildModule );

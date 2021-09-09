@@ -1,6 +1,6 @@
 {
   "name": "@splidejs/splide-extension-grid",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "The extension of Splide for creating grid.",
   "author": "Naotoshi Fujita",
   "license": "MIT",
@@ -26,16 +26,32 @@
     "url": "https://github.com/Splidejs/splide-extension-grid/issues"
   },
   "devDependencies": {
-    "@babel/core": "^7.10.5",
-    "@babel/preset-env": "^7.10.4",
-    "babel-loader": "^8.1.0",
-    "gulp": "^4.0.2",
-    "serialize-javascript": "^4.0.0",
-    "uglifyjs-webpack-plugin": "^2.2.0",
-    "webpack": "^4.43.0",
-    "webpack-stream": "^5.2.1"
+    "@babel/core": "^7.15.5",
+    "@babel/preset-env": "^7.15.4",
+    "@rollup/plugin-babel": "^5.3.0",
+    "@rollup/plugin-node-resolve": "^13.0.4",
+    "@splidejs/splide": "file:../splide",
+    "@types/jest": "^27.0.1",
+    "@typescript-eslint/eslint-plugin": "^4.31.0",
+    "@typescript-eslint/parser": "^4.31.0",
+    "babel-jest": "^27.1.1",
+    "babel-loader": "^8.2.2",
+    "esbuild": "^0.12.25",
+    "eslint": "^7.32.0",
+    "glob-watcher": "^5.0.5",
+    "jest": "^27.1.1",
+    "rollup": "^2.56.3",
+    "rollup-plugin-esbuild": "^4.5.0",
+    "ts-jest": "^27.0.5",
+    "tslib": "^2.3.1",
+    "typescript": "^4.4.2"
   },
   "scripts": {
-    "build:js": "gulp build:js"
+    "develop": "node scripts/develop.js",
+    "build:js": "node scripts/build-script.js",
+    "build:all": "node scripts/build-all.js && tsc --emitDeclarationOnly",
+    "build:types": "tsc --emitDeclarationOnly",
+    "eslint": "eslint src",
+    "jest": "jest --clearCache && jest"
   }
 }

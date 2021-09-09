@@ -4,6 +4,10 @@
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */
+'use strict';
+
+Object.defineProperty(exports, '__esModule', { value: true });
+
 function Grid(Splide2, Components2, options) {
   function mount() {
     sample();
@@ -19,4 +23,4 @@ function Grid(Splide2, Components2, options) {
   };
 }
 
-export { Grid };
+exports.Grid = Grid;
