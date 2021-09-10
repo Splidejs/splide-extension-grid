@@ -8,7 +8,7 @@ const name     = 'splide-extension-grid';
 
 
 function buildScript( minify ) {
-  rollup( {
+  return rollup( {
     input: './src/js/build/default.ts',
     plugins: [
       resolve(),

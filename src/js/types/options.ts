@@ -21,7 +21,7 @@ export interface GridOptions {
    * If the value is [ [ 1, 1 ], [ 2, 2 ] ], the first slide will be 1x1 and next all slides will be 2x2.
    * "rows" and "cols" options are ignored if this option is provided.
    */
-  dimensions?: number[][];
+  dimensions?: [ number, number ][];
 
   /**
    * Gaps for rows or cols.

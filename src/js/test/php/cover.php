@@ -3,7 +3,7 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width,initial-scale=1">
-	<title>Grid</title>
+	<title>Cover</title>
 
   <link rel="stylesheet" href="../../../../node_modules/@splidejs/splide/dist/css/themes/splide-default.min.css">
 
@@ -13,35 +13,22 @@
 	<script>
 		document.addEventListener( 'DOMContentLoaded', function () {
 			var splide = new Splide( '#splide01', {
-        height: 600,
+        cover: true,
+        height: '20rem',
+        gap: '1em',
         grid: {
           rows: 2,
           cols: 2,
           gap : {
-            row: '1rem',
-            col: '1rem',
+            row: '0.5rem',
+            col: '0.5rem',
           }
-        },
-        breakpoints: {
-          1000: {
-            grid: false,
-          },
         },
 			} );
 
 			splide.mount( window.splide.Extensions );
 		} );
 	</script>
-
-  <style>
-    .splide__slide {
-      font-size: 3rem;
-    }
-
-    .splide__slide--col {
-      border: 2px solid deepskyblue;
-    }
-  </style>
 </head>
 <body>
 
@@ -51,7 +38,7 @@
       <?php
       for ( $i = 0; $i < 10; $i ++ ) {
         echo '<li class="splide__slide">';
-        echo $i + 1;
+        printf( '<img src="../assets/images/pics/slide%02d.jpg">', $i + 1 );
         echo '</li>' . PHP_EOL;
       }
       echo '</ul>';

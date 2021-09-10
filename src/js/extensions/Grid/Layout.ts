@@ -1,65 +1,186 @@
-import { Components, Options, Splide } from '@splidejs/splide';
-import { children, unit, pad } from '@splidejs/splide/src/js/utils';
+import { CLASS_CONTAINER, EVENT_HIDDEN, EVENT_VISIBLE, EventInterface, Splide } from '@splidejs/splide';
+import { SlideComponent } from '@splidejs/splide/src/js/components/Slides/Slide';
+import { Style as StyleConstructor } from '@splidejs/splide/src/js/components/Style/Style';
+import { child, pad, queryAll, setAttribute, unit } from '@splidejs/splide/src/js/utils';
 import { CLASS_SLIDE_COL, CLASS_SLIDE_ROW } from '../../constants/classes';
 import { GridOptions } from '../../types/options';
 import { DimensionComponent } from './Dimension';
 
 
+/**
+ * The interface for the Layout sub component.
+ *
+ * @since 0.5.0
+ */
 export interface LayoutComponent {
-  layout(): void;
+  mount(): void;
+  destroy(): void;
 }
 
-export function Layout(
-  Splide: Splide,
-  Components: Components,
-  options: Options,
-  gridOptions: GridOptions,
-  dimension: DimensionComponent
-): LayoutComponent {
-  const { ruleBy } = Components.Style;
+/**
+ * The sub components to layout grids.
+ *
+ * @since 0.5.0
+ *
+ * @param Splide      - A Splide instance.
+ * @param gridOptions - Initialized grid options.
+ * @param Dimension   - A Dimension sub component.
+ *
+ * @return A Layout sub component object.
+ */
+export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: DimensionComponent ): LayoutComponent {
+  const { on, destroy: destroyEvent } = EventInterface( Splide );
+  const { Components, options } = Splide;
   const { resolve } = Components.Direction;
+  const { forEach } = Components.Slides;
+  const Style = StyleConstructor();
+  const { rule } = Style;
 
+  /**
+   * Initializes the component.
+   */
+  function mount(): void {
+    Style.mount();
+
+    layout();
+
+    if ( options.slideFocus ) {
+      on( EVENT_VISIBLE, onVisible );
+      on( EVENT_HIDDEN, onHidden );
+    }
+  }
+
+  /**
+   * Destroys the component.
+   */
+  function destroy(): void {
+    forEach( Slide => {
+      toggleTabIndex( Slide.slide, false );
+    } );
+
+    Style.destroy();
+    destroyEvent();
+  }
+
+  /**
+   * Layouts grid elements.
+   */
   function layout(): void {
-    Components.Slides.forEach( Slide => {
-      const [ rows, cols ] = dimension.getAt( Slide.index );
+    forEach( Slide => {
+      const { slide } = Slide;
+      const [ rows, cols ] = Dimension.getAt( Slide.index );
+      const rowSelector = buildSelector( slide );
 
-      children( Slide.slide, `.${ CLASS_SLIDE_ROW }` ).forEach( ( rowSlide, index ) => {
-        layoutRow( rows, index, rowSlide, Slide.slide );
+      layoutRow( rows, rowSelector );
+      layoutCol( cols, buildSelector( slide, true ) );
 
-        children( rowSlide, `.${ CLASS_SLIDE_COL }` ).forEach( ( colSlide, index ) => {
-          layoutCol( cols, index, colSlide, rowSlide );
-        } );
+      getColsIn( Slide.slide ).forEach( ( colSlide, index ) => {
+        colSlide.id = `${ Slide.slide.id }-col${ pad( index + 1 ) }`;
+        cover( colSlide );
       } );
     } );
   }
 
-  function layoutRow( rows: number, index: number, rowSlide: HTMLElement, slide: HTMLElement ): void {
+  /**
+   * Layouts row elements by CSS.
+   *
+   * @param rows     - A number of rows.
+   * @param selector - A selector.
+   */
+  function layoutRow( rows: number, selector: string ): void {
     const { row: rowGap } = gridOptions.gap;
     const height = `calc(${ 100 / rows }%${ rowGap ? ` - ${ unit( rowGap ) } * ${ ( rows - 1 ) / rows }` : '' })`;
 
-    rowSlide.id = `${ slide.id }-row${ pad( index + 1 ) }`;
-
-    ruleBy( rowSlide, 'height', height );
-    ruleBy( rowSlide, 'display', 'flex' );
-    ruleBy( rowSlide, 'margin', 0 );
-    ruleBy( rowSlide, 'padding', 0 );
-
-    if ( index < rows - 1 ) {
-      ruleBy( rowSlide, 'marginBottom', unit( rowGap ) )
-    }
+    rule( selector, 'height', height );
+    rule( selector, 'display', 'flex' );
+    rule( selector, 'margin', `0 0 ${ unit( rowGap ) } 0` );
+    rule( selector, 'padding', 0 );
+    rule( `${ selector }:last-child`, 'marginBottom', 0 );
   }
 
-  function layoutCol( cols: number, index: number, colSlide: HTMLElement, rowSlide: HTMLElement ): void {
+  /**
+   * Layouts col elements by CSS.
+   *
+   * @param cols     - A number of cols.
+   * @param selector - A selector.
+   */
+  function layoutCol( cols: number, selector: string ): void {
     const { col: colGap } = gridOptions.gap;
     const width = `calc(${ 100 / cols }%${ colGap ? ` - ${ unit( colGap ) } * ${ ( cols - 1 ) / cols }` : '' })`;
 
-    colSlide.id = `${ rowSlide.id }-col${ pad( index + 1 ) }`;
+    rule( selector, 'width', width );
+    rule( `${ selector }:not(:last-child)`, resolve( 'marginRight' ), unit( colGap ) );
+  }
 
-    ruleBy( colSlide, 'width', width );
-    ruleBy( colSlide, resolve( 'marginRight' ), unit( colGap ) );
+  /**
+   * Sets the background image to the col element by its own image element.
+   *
+   * @param colSlide - A col slide element.
+   */
+  function cover( colSlide: HTMLElement ): void {
+    const container = child( colSlide, `.${ CLASS_CONTAINER }` );
+    const img       = child<HTMLImageElement>( container || colSlide, 'img' );
+
+    if ( img && img.src ) {
+      const selector = `#${ colSlide.id }${ container ? ` > .${ CLASS_CONTAINER }` : '' }`;
+      rule( selector, 'background', `center/cover no-repeat url("${ img.src }")` );
+      rule( `${ selector } > img`, 'display', 'none' );
+    }
+  }
+
+  /**
+   * Builds selector for a row or a col in the provided slide.
+   *
+   * @param slide - A slide element.
+   * @param col   - Optional. Determines whether to build a selector for a col or a row.
+   */
+  function buildSelector( slide: HTMLElement, col?: boolean ): string {
+    return `#${ slide.id } > .${ CLASS_SLIDE_ROW }${ col ? ` > .${ CLASS_SLIDE_COL }` : '' }`;
+  }
+
+  /**
+   * Returns col elements in the provided slide.
+   *
+   * @param slide - A slide element.
+   *
+   * @return An array with col elements.
+   */
+  function getColsIn( slide: HTMLElement ): HTMLElement[] {
+    return queryAll( slide.parentElement, buildSelector( slide, true ) );
+  }
+
+  /**
+   * Toggles the tab index of col elements.
+   *
+   * @param slide - A slide element.
+   * @param add   - Optional. Determines whether to add or remove tab index.
+   */
+  function toggleTabIndex( slide: HTMLElement, add?: boolean ): void {
+    getColsIn( slide ).forEach( colSlide => {
+      setAttribute( colSlide, 'tabindex', add ? 0 : null );
+    } );
+  }
+
+  /**
+   * Called when any slide becomes visible.
+   *
+   * @param Slide - A Slide component.
+   */
+  function onVisible( Slide: SlideComponent ): void {
+    toggleTabIndex( Slide.slide, true );
+  }
+
+  /**
+   * Called when any slide gets hidden.
+   *
+   * @param Slide - A Slide component.
+   */
+  function onHidden( Slide: SlideComponent ): void {
+    toggleTabIndex( Slide.slide, false );
   }
 
   return {
-    layout,
+    mount,
+    destroy,
   }
 }
