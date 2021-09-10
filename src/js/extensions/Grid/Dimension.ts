@@ -1,4 +1,4 @@
-import { isArray } from '@splidejs/splide/src/js/utils';
+import { isArray, min, assert } from '@splidejs/splide/src/js/utils';
 import { GridOptions } from '../../types/options';
 
 
@@ -8,7 +8,8 @@ import { GridOptions } from '../../types/options';
  * @since 0.3.0
  */
 export interface DimensionComponent {
-  getAt( index: number ): number[];
+  get( index: number ): [ number, number ];
+  getAt( index: number ): [ number, number ];
 }
 
 /**
@@ -21,30 +22,58 @@ export interface DimensionComponent {
 export function Dimension( options: GridOptions ): DimensionComponent {
   /**
    * Retrieves the dimension array from options.
+   * If it is not available, returns [ [ options.rows, options.cols ] ].
    *
-   * @return An array with dimensions that may be empty.
+   * @return An array with dimensions.
    */
-  function get(): [ number, number ][] {
-    const { dimensions } = options;
-    return isArray( dimensions ) ? dimensions : [];
+  function normalize(): [ number, number ][] {
+    const { rows, cols, dimensions } = options;
+    return isArray( dimensions ) ? dimensions : [ [ rows, cols ] ];
   }
 
   /**
-   * Returns dimension ([ row, col ]) at the specified index.
-   * If the dimensions option is not available or the index is out of the range,
-   * this keeps returning `[ options.rows, options.cols ]`.
+   * Returns the dimension (`[ row, col ]`) at the specified index.
    *
    * @param index - An index.
    *
    * @return A tuple with rows and cols.
    */
+  function get( index: number ): [ number, number ] {
+    const dimensions = normalize();
+    return dimensions[ min( index, dimensions.length - 1 ) ];
+  }
+
+  /**
+   * Returns the dimension (`[ row, col ]`) where the slide at the specified index should belong.
+   *
+   * @param index - A slide index (before they are assigned to cols).
+   *
+   * @return A tuple with rows and cols.
+   */
   function getAt( index: number ): [ number, number ] {
-    const { rows, cols } = options;
-    const dimensions = get();
-    return dimensions[ index ] || [ rows, cols ];
+    const dimensions = normalize();
+
+    let rows, cols, aggregator = 0
+
+    for ( let i = 0; i < dimensions.length; i++ ) {
+      const dimension = dimensions[ i ];
+      rows = dimension[ 0 ] || 1;
+      cols = dimension[ 1 ] || 1;
+
+      aggregator += rows * cols;
+
+      if ( index < aggregator ) {
+        break;
+      }
+    }
+
+    assert( rows && cols, 'Invalid dimension' );
+
+    return [ rows, cols ];
   }
 
   return {
+    get,
     getAt,
   }
 }

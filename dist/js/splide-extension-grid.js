@@ -31,8 +31,8 @@
   var EVENT_UPDATED = "undated";
   var EVENT_DESTROY = "destroy";
 
-  function EventInterface(Splide4) {
-    var event = Splide4.event;
+  function EventInterface(Splide22) {
+    var event = Splide22.event;
     var key = {};
     var listeners = [];
 
@@ -256,6 +256,25 @@
     return isString2(value) ? value : value ? value + "px" : "";
   }
 
+  var PROJECT_CODE2 = "splide";
+
+  function assert2(condition, message) {
+    if (message === void 0) {
+      message = "";
+    }
+
+    if (!condition) {
+      throw new Error("[" + PROJECT_CODE2 + "] " + message);
+    }
+  }
+
+  var min2 = Math.min,
+      max2 = Math.max,
+      floor2 = Math.floor,
+      ceil2 = Math.ceil,
+      abs2 = Math.abs,
+      round2 = Math.round;
+
   function pad2(number) {
     return number < 10 ? "0" + number : "" + number;
   }
@@ -270,19 +289,41 @@
   };
 
   function Dimension(options) {
-    function get() {
-      var dimensions = options.dimensions;
-      return isArray2(dimensions) ? dimensions : [];
+    function normalize() {
+      var rows = options.rows,
+          cols = options.cols,
+          dimensions = options.dimensions;
+      return isArray2(dimensions) ? dimensions : [[rows, cols]];
+    }
+
+    function get(index) {
+      var dimensions = normalize();
+      return dimensions[min2(index, dimensions.length - 1)];
     }
 
     function getAt(index) {
-      var rows = options.rows,
-          cols = options.cols;
-      var dimensions = get();
-      return dimensions[index] || [rows, cols];
+      var dimensions = normalize();
+      var rows,
+          cols,
+          aggregator = 0;
+
+      for (var i = 0; i < dimensions.length; i++) {
+        var dimension = dimensions[i];
+        rows = dimension[0] || 1;
+        cols = dimension[1] || 1;
+        aggregator += rows * cols;
+
+        if (index < aggregator) {
+          break;
+        }
+      }
+
+      assert2(rows && cols, "Invalid dimension");
+      return [rows, cols];
     }
 
     return {
+      get: get,
       getAt: getAt
     };
   }
@@ -363,9 +404,9 @@
       forEach3(function (Slide2) {
         var slide = Slide2.slide;
 
-        var _Dimension2$getAt = Dimension2.getAt(Slide2.index),
-            rows = _Dimension2$getAt[0],
-            cols = _Dimension2$getAt[1];
+        var _Dimension2$get = Dimension2.get(Slide2.isClone ? Slide2.slideIndex : Slide2.index),
+            rows = _Dimension2$get[0],
+            cols = _Dimension2$get[1];
 
         var rowSelector = buildSelector(slide);
         layoutRow(rows, rowSelector);
@@ -500,9 +541,9 @@
         var slide = Slide2.slide,
             index = Slide2.index;
 
-        var _Dimension2$getAt2 = Dimension2.getAt(index),
-            rows = _Dimension2$getAt2[0],
-            cols = _Dimension2$getAt2[1];
+        var _Dimension2$getAt = Dimension2.getAt(index),
+            rows = _Dimension2$getAt[0],
+            cols = _Dimension2$getAt[1];
 
         if (!col) {
           if (!row) {
@@ -557,4 +598,11 @@
     window.splide.Extensions = window.splide.Extensions || {};
     window.splide.Extensions.Grid = Grid;
   }
+  /*!
+   * Splide.js
+   * Version  : 3.0.0
+   * License  : MIT
+   * Copyright: 2021 Naotoshi Fujita
+   */
+
 });

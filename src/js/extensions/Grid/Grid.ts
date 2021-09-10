@@ -31,7 +31,7 @@ import { Layout as LayoutConstructor } from './Layout';
  */
 declare module '@splidejs/splide' {
   interface Options {
-    grid?: GridOptions;
+    grid?: GridOptions | null | false;
   }
 }
 
@@ -163,7 +163,7 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
 
       if ( ! col ) {
         if ( ! row ) {
-          outerSlide = create( slide.tagName as any, CLASS_SLIDE ); // todo
+          outerSlide = create( slide.tagName, CLASS_SLIDE );
           outerSlides.push( outerSlide );
         }
 

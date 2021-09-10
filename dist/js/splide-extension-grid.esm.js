@@ -4,24 +4,268 @@
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */
-import { CLASS_SLIDE, EventInterface, EVENT_VISIBLE, EVENT_HIDDEN, CLASS_CONTAINER, EVENT_UPDATED, EVENT_REFRESH } from '@splidejs/splide';
-import { isArray, queryAll, pad, unit, child, setAttribute, assign, push, addClass, append, removeClass, remove, empty, create } from '@splidejs/splide/src/js/utils';
-import { Style } from '@splidejs/splide/src/js/components/Style/Style';
+// ../splide/dist/js/splide.esm.js
+var PROJECT_CODE = "splide";
+function isArray(subject) {
+  return Array.isArray(subject);
+}
+function toArray(value) {
+  return isArray(value) ? value : [value];
+}
+function forEach(values, iteratee) {
+  toArray(values).forEach(iteratee);
+}
+var CLASS_SLIDE = `${PROJECT_CODE}__slide`;
+var CLASS_CONTAINER = `${CLASS_SLIDE}__container`;
+var EVENT_VISIBLE = "visible";
+var EVENT_HIDDEN = "hidden";
+var EVENT_REFRESH = "refresh";
+var EVENT_UPDATED = "undated";
+var EVENT_DESTROY = "destroy";
+function EventInterface(Splide22) {
+  const { event } = Splide22;
+  const key = {};
+  let listeners = [];
+  function on(events, callback, priority) {
+    event.on(events, callback, key, priority);
+  }
+  function off(events) {
+    event.off(events, key);
+  }
+  function bind(targets, events, callback, options) {
+    forEachEvent(targets, events, (target, event2) => {
+      listeners.push([target, event2, callback, options]);
+      target.addEventListener(event2, callback, options);
+    });
+  }
+  function unbind(targets, events) {
+    forEachEvent(targets, events, (target, event2) => {
+      listeners = listeners.filter((listener) => {
+        if (listener[0] === target && listener[1] === event2) {
+          target.removeEventListener(event2, listener[2], listener[3]);
+          return false;
+        }
+        return true;
+      });
+    });
+  }
+  function forEachEvent(targets, events, iteratee) {
+    forEach(targets, (target) => {
+      if (target) {
+        events.split(" ").forEach(iteratee.bind(null, target));
+      }
+    });
+  }
+  function destroy() {
+    listeners = listeners.filter((data) => unbind(data[0], data[1]));
+    event.offBy(key);
+  }
+  event.on(EVENT_DESTROY, destroy, key);
+  return {
+    on,
+    off,
+    emit: event.emit,
+    bind,
+    unbind,
+    destroy
+  };
+}
 
-const CLASS_SLIDE_ROW = `${CLASS_SLIDE}__row`;
-const CLASS_SLIDE_COL = `${CLASS_SLIDE}--col`;
+// ../splide/src/js/utils/array/empty/empty.ts
+function empty2(array) {
+  array.length = 0;
+}
 
-const DEFAULTS = {
+// ../splide/src/js/utils/type/type.ts
+function isObject2(subject) {
+  return !isNull2(subject) && typeof subject === "object";
+}
+function isArray2(subject) {
+  return Array.isArray(subject);
+}
+function isString2(subject) {
+  return typeof subject === "string";
+}
+function isNull2(subject) {
+  return subject === null;
+}
+function isHTMLElement2(subject) {
+  return subject instanceof HTMLElement;
+}
+
+// ../splide/src/js/utils/array/toArray/toArray.ts
+function toArray2(value) {
+  return isArray2(value) ? value : [value];
+}
+
+// ../splide/src/js/utils/array/forEach/forEach.ts
+function forEach2(values, iteratee) {
+  toArray2(values).forEach(iteratee);
+}
+
+// ../splide/src/js/utils/array/push/push.ts
+function push2(array, items) {
+  array.push(...toArray2(items));
+  return array;
+}
+
+// ../splide/src/js/utils/array/index.ts
+var arrayProto2 = Array.prototype;
+
+// ../splide/src/js/utils/arrayLike/slice/slice.ts
+function slice2(arrayLike, start, end) {
+  return arrayProto2.slice.call(arrayLike, start, end);
+}
+
+// ../splide/src/js/utils/arrayLike/find/find.ts
+function find2(arrayLike, predicate) {
+  return slice2(arrayLike).filter(predicate)[0];
+}
+
+// ../splide/src/js/utils/dom/toggleClass/toggleClass.ts
+function toggleClass2(elm, classes, add) {
+  if (elm) {
+    forEach2(classes, (name) => {
+      if (name) {
+        elm.classList[add ? "add" : "remove"](name);
+      }
+    });
+  }
+}
+
+// ../splide/src/js/utils/dom/addClass/addClass.ts
+function addClass2(elm, classes) {
+  toggleClass2(elm, classes, true);
+}
+
+// ../splide/src/js/utils/dom/append/append.ts
+function append2(parent, children3) {
+  forEach2(children3, parent.appendChild.bind(parent));
+}
+
+// ../splide/src/js/utils/dom/matches/matches.ts
+function matches2(elm, selector) {
+  return (elm["msMatchesSelector"] || elm.matches).call(elm, selector);
+}
+
+// ../splide/src/js/utils/dom/children/children.ts
+function children2(parent, selector) {
+  return parent ? slice2(parent.children).filter((child3) => matches2(child3, selector)) : [];
+}
+
+// ../splide/src/js/utils/dom/child/child.ts
+function child2(parent, selector) {
+  return selector ? children2(parent, selector)[0] : parent.firstElementChild;
+}
+
+// ../splide/src/js/utils/object/forOwn/forOwn.ts
+function forOwn2(object, iteratee) {
+  if (object) {
+    const keys = Object.keys(object);
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (key !== "__proto__") {
+        if (iteratee(object[key], key) === false) {
+          break;
+        }
+      }
+    }
+  }
+  return object;
+}
+
+// ../splide/src/js/utils/object/assign/assign.ts
+function assign2(object, ...sources) {
+  sources.forEach((source) => {
+    forOwn2(source, (value, key) => {
+      object[key] = source[key];
+    });
+  });
+  return object;
+}
+
+// ../splide/src/js/utils/dom/removeAttribute/removeAttribute.ts
+function removeAttribute2(elm, attrs) {
+  if (elm) {
+    forEach2(attrs, (attr) => {
+      elm.removeAttribute(attr);
+    });
+  }
+}
+
+// ../splide/src/js/utils/dom/setAttribute/setAttribute.ts
+function setAttribute2(elm, attrs, value) {
+  if (isObject2(attrs)) {
+    forOwn2(attrs, (value2, name) => {
+      setAttribute2(elm, name, value2);
+    });
+  } else {
+    isNull2(value) ? removeAttribute2(elm, attrs) : elm.setAttribute(attrs, String(value));
+  }
+}
+
+// ../splide/src/js/utils/dom/create/create.ts
+function create2(tag, attrs, parent) {
+  const elm = document.createElement(tag);
+  if (attrs) {
+    if (isString2(attrs) || isArray2(attrs)) {
+      addClass2(elm, attrs);
+    } else {
+      setAttribute2(elm, attrs);
+    }
+  }
+  if (parent) {
+    append2(parent, elm);
+  }
+  return elm;
+}
+
+// ../splide/src/js/utils/dom/queryAll/queryAll.ts
+function queryAll2(parent, selector) {
+  return slice2(parent.querySelectorAll(selector));
+}
+
+// ../splide/src/js/utils/dom/remove/remove.ts
+function remove2(nodes) {
+  forEach2(nodes, (node) => {
+    if (node && node.parentNode) {
+      node.parentNode.removeChild(node);
+    }
+  });
+}
+
+// ../splide/src/js/utils/dom/removeClass/removeClass.ts
+function removeClass2(elm, classes) {
+  toggleClass2(elm, classes, false);
+}
+
+// ../splide/src/js/utils/dom/unit/unit.ts
+function unit2(value) {
+  return isString2(value) ? value : value ? `${value}px` : "";
+}
+
+// ../splide/src/js/utils/string/pad/pad.ts
+function pad2(number) {
+  return number < 10 ? `0${number}` : `${number}`;
+}
+
+// src/js/constants/classes.ts
+var CLASS_SLIDE_ROW = `${CLASS_SLIDE}__row`;
+var CLASS_SLIDE_COL = `${CLASS_SLIDE}--col`;
+
+// src/js/constants/defaults.ts
+var DEFAULTS2 = {
   rows: 1,
   cols: 1,
   dimensions: [],
   gap: {}
 };
 
+// src/js/extensions/Grid/Dimension.ts
 function Dimension(options) {
   function get() {
     const { dimensions } = options;
-    return isArray(dimensions) ? dimensions : [];
+    return isArray2(dimensions) ? dimensions : [];
   }
   function getAt(index) {
     const { rows, cols } = options;
@@ -33,15 +277,49 @@ function Dimension(options) {
   };
 }
 
-function Layout(Splide2, gridOptions, Dimension) {
-  const { on, destroy: destroyEvent } = EventInterface(Splide2);
-  const { Components, options } = Splide2;
-  const { resolve } = Components.Direction;
-  const { forEach } = Components.Slides;
-  const Style$1 = Style();
-  const { rule } = Style$1;
+// ../splide/src/js/components/Style/Style.ts
+function Style2() {
+  let style3;
+  let sheet;
   function mount() {
-    Style$1.mount();
+    style3 = create2("style", {}, document.head);
+    sheet = style3.sheet;
+  }
+  function destroy() {
+    remove2(style3);
+    sheet = null;
+  }
+  function rule(selector, prop, value) {
+    const { cssRules } = sheet;
+    const cssRule = find2(cssRules, (cssRule2) => isCSSStyleRule(cssRule2) && cssRule2.selectorText === selector) || cssRules[sheet.insertRule(`${selector}{}`, 0)];
+    if (isCSSStyleRule(cssRule)) {
+      cssRule.style[prop] = `${value}`;
+    }
+  }
+  function ruleBy(target, prop, value) {
+    rule(`#${isHTMLElement2(target) ? target.id : target}`, prop, value);
+  }
+  function isCSSStyleRule(cssRule) {
+    return cssRule instanceof CSSStyleRule;
+  }
+  return {
+    mount,
+    destroy,
+    rule,
+    ruleBy
+  };
+}
+
+// src/js/extensions/Grid/Layout.ts
+function Layout2(Splide4, gridOptions, Dimension2) {
+  const { on, destroy: destroyEvent } = EventInterface(Splide4);
+  const { Components: Components2, options } = Splide4;
+  const { resolve } = Components2.Direction;
+  const { forEach: forEach3 } = Components2.Slides;
+  const Style3 = Style2();
+  const { rule } = Style3;
+  function mount() {
+    Style3.mount();
     layout();
     if (options.slideFocus) {
       on(EVENT_VISIBLE, onVisible);
@@ -49,43 +327,43 @@ function Layout(Splide2, gridOptions, Dimension) {
     }
   }
   function destroy() {
-    forEach((Slide) => {
-      toggleTabIndex(Slide.slide, false);
+    forEach3((Slide2) => {
+      toggleTabIndex(Slide2.slide, false);
     });
-    Style$1.destroy();
+    Style3.destroy();
     destroyEvent();
   }
   function layout() {
-    forEach((Slide) => {
-      const { slide } = Slide;
-      const [rows, cols] = Dimension.getAt(Slide.index);
+    forEach3((Slide2) => {
+      const { slide } = Slide2;
+      const [rows, cols] = Dimension2.getAt(Slide2.index);
       const rowSelector = buildSelector(slide);
       layoutRow(rows, rowSelector);
       layoutCol(cols, buildSelector(slide, true));
-      getColsIn(Slide.slide).forEach((colSlide, index) => {
-        colSlide.id = `${Slide.slide.id}-col${pad(index + 1)}`;
+      getColsIn(Slide2.slide).forEach((colSlide, index) => {
+        colSlide.id = `${Slide2.slide.id}-col${pad2(index + 1)}`;
         cover(colSlide);
       });
     });
   }
   function layoutRow(rows, selector) {
     const { row: rowGap } = gridOptions.gap;
-    const height = `calc(${100 / rows}%${rowGap ? ` - ${unit(rowGap)} * ${(rows - 1) / rows}` : ""})`;
+    const height = `calc(${100 / rows}%${rowGap ? ` - ${unit2(rowGap)} * ${(rows - 1) / rows}` : ""})`;
     rule(selector, "height", height);
     rule(selector, "display", "flex");
-    rule(selector, "margin", `0 0 ${unit(rowGap)} 0`);
+    rule(selector, "margin", `0 0 ${unit2(rowGap)} 0`);
     rule(selector, "padding", 0);
     rule(`${selector}:last-child`, "marginBottom", 0);
   }
   function layoutCol(cols, selector) {
     const { col: colGap } = gridOptions.gap;
-    const width = `calc(${100 / cols}%${colGap ? ` - ${unit(colGap)} * ${(cols - 1) / cols}` : ""})`;
+    const width = `calc(${100 / cols}%${colGap ? ` - ${unit2(colGap)} * ${(cols - 1) / cols}` : ""})`;
     rule(selector, "width", width);
-    rule(`${selector}:not(:last-child)`, resolve("marginRight"), unit(colGap));
+    rule(`${selector}:not(:last-child)`, resolve("marginRight"), unit2(colGap));
   }
   function cover(colSlide) {
-    const container = child(colSlide, `.${CLASS_CONTAINER}`);
-    const img = child(container || colSlide, "img");
+    const container = child2(colSlide, `.${CLASS_CONTAINER}`);
+    const img = child2(container || colSlide, "img");
     if (img && img.src) {
       const selector = `#${colSlide.id}${container ? ` > .${CLASS_CONTAINER}` : ""}`;
       rule(selector, "background", `center/cover no-repeat url("${img.src}")`);
@@ -96,18 +374,18 @@ function Layout(Splide2, gridOptions, Dimension) {
     return `#${slide.id} > .${CLASS_SLIDE_ROW}${col ? ` > .${CLASS_SLIDE_COL}` : ""}`;
   }
   function getColsIn(slide) {
-    return queryAll(slide.parentElement, buildSelector(slide, true));
+    return queryAll2(slide.parentElement, buildSelector(slide, true));
   }
   function toggleTabIndex(slide, add) {
     getColsIn(slide).forEach((colSlide) => {
-      setAttribute(colSlide, "tabindex", add ? 0 : null);
+      setAttribute2(colSlide, "tabindex", add ? 0 : null);
     });
   }
-  function onVisible(Slide) {
-    toggleTabIndex(Slide.slide, true);
+  function onVisible(Slide2) {
+    toggleTabIndex(Slide2.slide, true);
   }
-  function onHidden(Slide) {
-    toggleTabIndex(Slide.slide, false);
+  function onHidden(Slide2) {
+    toggleTabIndex(Slide2.slide, false);
   }
   return {
     mount,
@@ -115,27 +393,28 @@ function Layout(Splide2, gridOptions, Dimension) {
   };
 }
 
-function Grid(Splide2, Components2, options) {
-  const { on, off } = EventInterface(Splide2);
-  const { Elements } = Components2;
+// src/js/extensions/Grid/Grid.ts
+function Grid(Splide4, Components2, options) {
+  const { on, off } = EventInterface(Splide4);
+  const { Elements: Elements2 } = Components2;
   const gridOptions = {};
-  const Dimension$1 = Dimension(gridOptions);
-  const Layout$1 = Layout(Splide2, gridOptions, Dimension$1);
+  const Dimension2 = Dimension(gridOptions);
+  const Layout3 = Layout2(Splide4, gridOptions, Dimension2);
   const modifier = `${CLASS_SLIDE}--grid`;
   const originalSlides = [];
   function setup() {
-    options.grid = assign({}, DEFAULTS, options.grid || {});
+    options.grid = assign2({}, DEFAULTS2, options.grid || {});
   }
   function mount() {
     init();
     on(EVENT_UPDATED, init);
   }
   function init() {
-    assign(gridOptions, options.grid || DEFAULTS);
+    assign2(gridOptions, options.grid || DEFAULTS2);
     if (hasGrid()) {
-      push(originalSlides, Elements.slides);
-      addClass(Splide2.root, modifier);
-      append(Elements.list, build());
+      push2(originalSlides, Elements2.slides);
+      addClass2(Splide4.root, modifier);
+      append2(Elements2.list, build());
       on(EVENT_REFRESH, layout);
       refresh();
     } else if (originalSlides.length) {
@@ -144,34 +423,34 @@ function Grid(Splide2, Components2, options) {
     }
   }
   function destroy() {
-    Layout$1.destroy();
+    Layout3.destroy();
     originalSlides.forEach((slide) => {
-      removeClass(slide, CLASS_SLIDE_COL);
-      append(Elements.list, slide);
+      removeClass2(slide, CLASS_SLIDE_COL);
+      append2(Elements2.list, slide);
     });
-    remove(Elements.slides);
-    removeClass(Splide2.root, modifier);
-    empty(originalSlides);
+    remove2(Elements2.slides);
+    removeClass2(Splide4.root, modifier);
+    empty2(originalSlides);
     off(EVENT_REFRESH);
   }
   function refresh() {
-    Splide2.refresh();
+    Splide4.refresh();
   }
   function layout() {
     if (hasGrid()) {
-      Layout$1.mount();
+      Layout3.mount();
     }
   }
   function build() {
     const outerSlides = [];
     let row = 0, col = 0;
     let outerSlide, rowSlide;
-    Components2.Slides.forEach((Slide) => {
-      const { slide, index } = Slide;
-      const [rows, cols] = Dimension$1.getAt(index);
+    Components2.Slides.forEach((Slide2) => {
+      const { slide, index } = Slide2;
+      const [rows, cols] = Dimension2.getAt(index);
       if (!col) {
         if (!row) {
-          outerSlide = create(slide.tagName, CLASS_SLIDE);
+          outerSlide = create2(slide.tagName, CLASS_SLIDE);
           outerSlides.push(outerSlide);
         }
         rowSlide = buildRow(rows, slide, outerSlide);
@@ -186,17 +465,17 @@ function Grid(Splide2, Components2, options) {
   }
   function buildRow(rows, slide, outerSlide) {
     const tag = slide.tagName.toLowerCase() === "li" ? "ul" : "div";
-    return create(tag, CLASS_SLIDE_ROW, outerSlide);
+    return create2(tag, CLASS_SLIDE_ROW, outerSlide);
   }
   function buildCol(cols, slide, rowSlide) {
-    addClass(slide, CLASS_SLIDE_COL);
-    append(rowSlide, slide);
+    addClass2(slide, CLASS_SLIDE_COL);
+    append2(rowSlide, slide);
     return slide;
   }
   function hasGrid() {
     if (options.grid) {
       const { rows, cols, dimensions } = gridOptions;
-      return rows > 1 || cols > 1 || isArray(dimensions) && dimensions.length > 0;
+      return rows > 1 || cols > 1 || isArray2(dimensions) && dimensions.length > 0;
     }
     return false;
   }
@@ -206,5 +485,11 @@ function Grid(Splide2, Components2, options) {
     destroy
   };
 }
+/*!
+ * Splide.js
+ * Version  : 3.0.0
+ * License  : MIT
+ * Copyright: 2021 Naotoshi Fujita
+ */
 
 export { Grid };

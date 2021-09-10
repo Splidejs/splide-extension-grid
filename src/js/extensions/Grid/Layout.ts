@@ -68,7 +68,7 @@ export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: Dim
   function layout(): void {
     forEach( Slide => {
       const { slide } = Slide;
-      const [ rows, cols ] = Dimension.getAt( Slide.index );
+      const [ rows, cols ] = Dimension.get( Slide.isClone ? Slide.slideIndex : Slide.index );
       const rowSelector = buildSelector( slide );
 
       layoutRow( rows, rowSelector );
