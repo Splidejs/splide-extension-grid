@@ -15,12 +15,13 @@ function buildScript( minify ) {
       esbuild( {
         experimentalBundling: true,
         minify              : false,
+         legalComments: 'none'
       } ),
       babel.getBabelOutputPlugin( {
         configFile: path.resolve( __dirname, '../.babelrc' ),
         allowAllFormats: true,
       } ),
-      esbuild( { minify } ),
+      esbuild( { minify, legalComments: 'none' } ),
     ]
   } ).then( bundle => {
     return bundle.write( {

@@ -35,7 +35,6 @@ declare module '@splidejs/splide' {
   }
 }
 
-
 /**
  * The extension for the grid slider.
  *

@@ -557,11 +557,4 @@
     window.splide.Extensions = window.splide.Extensions || {};
     window.splide.Extensions.Grid = Grid;
   }
-  /*!
-   * Splide.js
-   * Version  : 3.0.0
-   * License  : MIT
-   * Copyright: 2021 Naotoshi Fujita
-   */
-
 });
