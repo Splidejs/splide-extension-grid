@@ -236,6 +236,10 @@
     return elm;
   }
 
+  function hasClass2(elm, className) {
+    return elm && elm.classList.contains(className);
+  }
+
   function queryAll2(parent, selector) {
     return slice2(parent.querySelectorAll(selector));
   }
@@ -293,7 +297,7 @@
       var rows = options.rows,
           cols = options.cols,
           dimensions = options.dimensions;
-      return isArray2(dimensions) ? dimensions : [[rows, cols]];
+      return isArray2(dimensions) && dimensions.length ? dimensions : [[rows, cols]];
     }
 
     function get(index) {
@@ -498,7 +502,12 @@
     function init() {
       assign2(gridOptions, options.grid || DEFAULTS2);
 
-      if (hasGrid()) {
+      if (shouldInit()) {
+        if (isActive()) {
+          destroy();
+          refresh();
+        }
+
         push2(originalSlides, Elements2.slides);
         addClass2(Splide4.root, modifier);
         append2(Elements2.list, build());
@@ -527,7 +536,7 @@
     }
 
     function layout() {
-      if (hasGrid()) {
+      if (isActive()) {
         Layout3.mount();
       }
     }
@@ -560,6 +569,8 @@
           col = 0;
           row = ++row >= rows ? 0 : row;
         }
+
+        Slide2.destroy();
       }, true);
       return outerSlides;
     }
@@ -575,7 +586,7 @@
       return slide;
     }
 
-    function hasGrid() {
+    function shouldInit() {
       if (options.grid) {
         var rows = gridOptions.rows,
             cols = gridOptions.cols,
@@ -584,6 +595,10 @@
       }
 
       return false;
+    }
+
+    function isActive() {
+      return hasClass2(Splide4.root, modifier);
     }
 
     return {

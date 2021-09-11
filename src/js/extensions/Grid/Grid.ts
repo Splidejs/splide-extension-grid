@@ -18,6 +18,7 @@ import {
   isArray,
   push,
   empty,
+  hasClass,
 } from '@splidejs/splide/src/js/utils';
 import { CLASS_SLIDE_COL, CLASS_SLIDE_ROW } from '../../constants/classes';
 import { DEFAULTS } from '../../constants/defaults';
@@ -94,13 +95,18 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
   }
 
   /**
-   * Initializes the extension.
+   * Initializes the extension when the slider gets active, or options are updated.
    */
   function init(): void {
     assign( gridOptions, options.grid || DEFAULTS );
 
-    if ( hasGrid() ) {
-      push( originalSlides, Elements.slides );
+    if ( shouldInit() ) {
+      if ( isActive() ) {
+        destroy();
+        refresh(); // make sure the elements have latest slides.
+      }
+
+      push( originalSlides, Elements.slides ); // todo
       addClass( Splide.root, modifier );
       append( Elements.list, build() );
       on( EVENT_REFRESH, layout );
@@ -114,6 +120,8 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
   /**
    * Destroys the extension.
    * Deconstructs grids and restores original slides to the list element.
+   *
+   * @todo status classes
    */
   function destroy(): void {
     Layout.destroy();
@@ -139,9 +147,10 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
 
   /**
    * Layouts row and col slides via the Layout sub component.
+   * The extension calls this after requesting ths slider to refresh it.
    */
   function layout(): void {
-    if ( hasGrid() ) {
+    if ( isActive() ) {
       Layout.mount();
     }
   }
@@ -176,6 +185,8 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
         col = 0;
         row = ++row >= rows ? 0 : row;
       }
+
+      Slide.destroy();
     }, true );
 
     return outerSlides;
@@ -212,17 +223,26 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
   }
 
   /**
-   * Checks if the slider has grid or not.
+   * Tells if the extension should make grids or not by checking the current options.
    *
-   * @return `true` if the slider has grid, or otherwise `false`.
+   * @return `true` if the extension should init grids, or otherwise `false`.
    */
-  function hasGrid(): boolean {
+  function shouldInit(): boolean {
     if ( options.grid ) {
       const { rows, cols, dimensions } = gridOptions;
       return rows > 1 || cols > 1 || ( isArray( dimensions ) && dimensions.length > 0 );
     }
 
     return false;
+  }
+
+  /**
+   * Checks if the grid mode is active or not.
+   *
+   * @return `true` if the grid extension is active, or `false` if not.
+   */
+  function isActive(): boolean {
+    return hasClass( Splide.root, modifier );
   }
 
   return {

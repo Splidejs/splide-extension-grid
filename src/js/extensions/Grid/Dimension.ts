@@ -28,7 +28,7 @@ export function Dimension( options: GridOptions ): DimensionComponent {
    */
   function normalize(): [ number, number ][] {
     const { rows, cols, dimensions } = options;
-    return isArray( dimensions ) ? dimensions : [ [ rows, cols ] ];
+    return isArray( dimensions ) && dimensions.length ? dimensions : [ [ rows, cols ] ];
   }
 
   /**

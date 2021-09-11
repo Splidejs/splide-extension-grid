@@ -5,7 +5,8 @@ import { GridOptions } from '../../types/options';
  * @since 0.3.0
  */
 export interface DimensionComponent {
-    getAt(index: number): number[];
+    get(index: number): [number, number];
+    getAt(index: number): [number, number];
 }
 /**
  * The sub component to calculate dimension at the specific index.

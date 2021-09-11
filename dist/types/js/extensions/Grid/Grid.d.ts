@@ -5,7 +5,7 @@ import { GridOptions } from '../../types/options';
  */
 declare module '@splidejs/splide' {
     interface Options {
-        grid?: GridOptions;
+        grid?: GridOptions | null | false;
     }
 }
 /**

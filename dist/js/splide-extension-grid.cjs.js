@@ -224,6 +224,11 @@ function create2(tag, attrs, parent) {
   return elm;
 }
 
+// ../splide/src/js/utils/dom/hasClass/hasClass.ts
+function hasClass2(elm, className) {
+  return elm && elm.classList.contains(className);
+}
+
 // ../splide/src/js/utils/dom/queryAll/queryAll.ts
 function queryAll2(parent, selector) {
   return slice2(parent.querySelectorAll(selector));
@@ -248,6 +253,19 @@ function unit2(value) {
   return isString2(value) ? value : value ? `${value}px` : "";
 }
 
+// ../splide/src/js/constants/project.ts
+var PROJECT_CODE2 = "splide";
+
+// ../splide/src/js/utils/error/assert/assert.ts
+function assert2(condition, message = "") {
+  if (!condition) {
+    throw new Error(`[${PROJECT_CODE2}] ${message}`);
+  }
+}
+
+// ../splide/src/js/utils/math/index.ts
+var { min: min2, max: max2, floor: floor2, ceil: ceil2, abs: abs2, round: round2 } = Math;
+
 // ../splide/src/js/utils/string/pad/pad.ts
 function pad2(number) {
   return number < 10 ? `0${number}` : `${number}`;
@@ -267,16 +285,31 @@ var DEFAULTS2 = {
 
 // src/js/extensions/Grid/Dimension.ts
 function Dimension(options) {
-  function get() {
-    const { dimensions } = options;
-    return isArray2(dimensions) ? dimensions : [];
+  function normalize() {
+    const { rows, cols, dimensions } = options;
+    return isArray2(dimensions) && dimensions.length ? dimensions : [[rows, cols]];
+  }
+  function get(index) {
+    const dimensions = normalize();
+    return dimensions[min2(index, dimensions.length - 1)];
   }
   function getAt(index) {
-    const { rows, cols } = options;
-    const dimensions = get();
-    return dimensions[index] || [rows, cols];
+    const dimensions = normalize();
+    let rows, cols, aggregator = 0;
+    for (let i = 0; i < dimensions.length; i++) {
+      const dimension = dimensions[i];
+      rows = dimension[0] || 1;
+      cols = dimension[1] || 1;
+      aggregator += rows * cols;
+      if (index < aggregator) {
+        break;
+      }
+    }
+    assert2(rows && cols, "Invalid dimension");
+    return [rows, cols];
   }
   return {
+    get,
     getAt
   };
 }
@@ -340,7 +373,7 @@ function Layout2(Splide4, gridOptions, Dimension2) {
   function layout() {
     forEach3((Slide2) => {
       const { slide } = Slide2;
-      const [rows, cols] = Dimension2.getAt(Slide2.index);
+      const [rows, cols] = Dimension2.get(Slide2.isClone ? Slide2.slideIndex : Slide2.index);
       const rowSelector = buildSelector(slide);
       layoutRow(rows, rowSelector);
       layoutCol(cols, buildSelector(slide, true));
@@ -415,7 +448,12 @@ function Grid(Splide4, Components2, options) {
   }
   function init() {
     assign2(gridOptions, options.grid || DEFAULTS2);
-    if (hasGrid()) {
+    console.log("init");
+    if (shouldInit()) {
+      if (isActive()) {
+        destroy();
+        refresh();
+      }
       push2(originalSlides, Elements2.slides);
       addClass2(Splide4.root, modifier);
       append2(Elements2.list, build());
@@ -441,7 +479,7 @@ function Grid(Splide4, Components2, options) {
     Splide4.refresh();
   }
   function layout() {
-    if (hasGrid()) {
+    if (isActive()) {
       Layout3.mount();
     }
   }
@@ -464,6 +502,7 @@ function Grid(Splide4, Components2, options) {
         col = 0;
         row = ++row >= rows ? 0 : row;
       }
+      Slide2.destroy();
     }, true);
     return outerSlides;
   }
@@ -476,12 +515,15 @@ function Grid(Splide4, Components2, options) {
     append2(rowSlide, slide);
     return slide;
   }
-  function hasGrid() {
+  function shouldInit() {
     if (options.grid) {
       const { rows, cols, dimensions } = gridOptions;
       return rows > 1 || cols > 1 || isArray2(dimensions) && dimensions.length > 0;
     }
     return false;
+  }
+  function isActive() {
+    return hasClass2(Splide4.root, modifier);
   }
   return {
     setup,
