@@ -42,6 +42,9 @@
               dimensions: [],
             },
           },
+          700: {
+            destroy: true,
+          },
         }
 			} );
 

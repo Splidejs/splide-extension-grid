@@ -502,10 +502,9 @@
     function init() {
       assign2(gridOptions, options.grid || DEFAULTS2);
 
-      if (shouldInit()) {
+      if (shouldBuild()) {
         if (isActive()) {
           destroy();
-          refresh();
         }
 
         push2(originalSlides, Elements2.slides);
@@ -513,20 +512,23 @@
         append2(Elements2.list, build());
         on(EVENT_REFRESH, layout);
         refresh();
-      } else if (originalSlides.length) {
+      } else if (isActive()) {
         destroy();
         refresh();
       }
     }
 
     function destroy() {
+      var slides = Elements2.slides;
       Layout3.destroy();
       originalSlides.forEach(function (slide) {
         removeClass2(slide, CLASS_SLIDE_COL);
         append2(Elements2.list, slide);
       });
-      remove2(Elements2.slides);
+      remove2(slides);
       removeClass2(Splide4.root, modifier);
+      empty2(slides);
+      push2(slides, originalSlides);
       empty2(originalSlides);
       off(EVENT_REFRESH);
     }
@@ -546,10 +548,7 @@
       var row = 0,
           col = 0;
       var outerSlide, rowSlide;
-      Components2.Slides.forEach(function (Slide2) {
-        var slide = Slide2.slide,
-            index = Slide2.index;
-
+      originalSlides.forEach(function (slide, index) {
         var _Dimension2$getAt = Dimension2.getAt(index),
             rows = _Dimension2$getAt[0],
             cols = _Dimension2$getAt[1];
@@ -569,9 +568,7 @@
           col = 0;
           row = ++row >= rows ? 0 : row;
         }
-
-        Slide2.destroy();
-      }, true);
+      });
       return outerSlides;
     }
 
@@ -586,7 +583,7 @@
       return slide;
     }
 
-    function shouldInit() {
+    function shouldBuild() {
       if (options.grid) {
         var rows = gridOptions.rows,
             cols = gridOptions.cols,

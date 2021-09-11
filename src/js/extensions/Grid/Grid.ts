@@ -39,9 +39,6 @@ declare module '@splidejs/splide' {
 /**
  * The extension for the grid slider.
  *
- * @todo index after refresh (arrows are disabled)
- * @todo restore slide ID?
- *
  * @since 0.5.0
  *
  * @param Splide     - A Splide instance.
@@ -100,18 +97,17 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
   function init(): void {
     assign( gridOptions, options.grid || DEFAULTS );
 
-    if ( shouldInit() ) {
+    if ( shouldBuild() ) {
       if ( isActive() ) {
         destroy();
-        refresh(); // make sure the elements have latest slides.
       }
 
-      push( originalSlides, Elements.slides ); // todo
+      push( originalSlides, Elements.slides );
       addClass( Splide.root, modifier );
       append( Elements.list, build() );
       on( EVENT_REFRESH, layout );
       refresh();
-    } else if ( originalSlides.length ) {
+    } else if ( isActive() ) {
       destroy();
       refresh();
     }
@@ -120,10 +116,10 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
   /**
    * Destroys the extension.
    * Deconstructs grids and restores original slides to the list element.
-   *
-   * @todo status classes
    */
   function destroy(): void {
+    const { slides } = Elements;
+
     Layout.destroy();
 
     originalSlides.forEach( slide => {
@@ -131,8 +127,10 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
       append( Elements.list, slide );
     } );
 
-    remove( Elements.slides );
+    remove( slides );
     removeClass( Splide.root, modifier );
+    empty( slides );
+    push( slides, originalSlides );
     empty( originalSlides );
 
     off( EVENT_REFRESH );
@@ -166,8 +164,7 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
     let row = 0, col = 0;
     let outerSlide: HTMLElement, rowSlide: HTMLElement, colSlide: HTMLElement;
 
-    Components.Slides.forEach( Slide => {
-      const { slide, index } = Slide;
+    originalSlides.forEach( ( slide, index ) => {
       const [ rows, cols ] = Dimension.getAt( index );
 
       if ( ! col ) {
@@ -185,9 +182,7 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
         col = 0;
         row = ++row >= rows ? 0 : row;
       }
-
-      Slide.destroy();
-    }, true );
+    } );
 
     return outerSlides;
   }
@@ -227,7 +222,7 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
    *
    * @return `true` if the extension should init grids, or otherwise `false`.
    */
-  function shouldInit(): boolean {
+  function shouldBuild(): boolean {
     if ( options.grid ) {
       const { rows, cols, dimensions } = gridOptions;
       return rows > 1 || cols > 1 || ( isArray( dimensions ) && dimensions.length > 0 );
