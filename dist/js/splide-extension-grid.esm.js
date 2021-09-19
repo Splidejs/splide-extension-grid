@@ -68,6 +68,7 @@ function EventInterface(Splide22) {
     destroy
   };
 }
+var CLASS_ROOT = PROJECT_CODE;
 var CLASS_SLIDE = `${PROJECT_CODE}__slide`;
 var CLASS_CONTAINER = `${CLASS_SLIDE}__container`;
 
@@ -433,7 +434,7 @@ function Grid(Splide4, Components2, options) {
   const gridOptions = {};
   const Dimension2 = Dimension(gridOptions);
   const Layout3 = Layout2(Splide4, gridOptions, Dimension2);
-  const modifier = `${CLASS_SLIDE}--grid`;
+  const modifier = `${CLASS_ROOT}--grid`;
   const originalSlides = [];
   function setup() {
     options.grid = assign2({}, DEFAULTS2, options.grid || {});

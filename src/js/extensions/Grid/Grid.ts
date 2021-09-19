@@ -1,5 +1,5 @@
 import {
-  BaseComponent,
+  BaseComponent, CLASS_ROOT,
   CLASS_SLIDE,
   Components,
   EVENT_REFRESH,
@@ -69,7 +69,7 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
   /**
    * The modifier class to add to the root element.
    */
-  const modifier = `${ CLASS_SLIDE }--grid`;
+  const modifier = `${ CLASS_ROOT }--grid`;
 
   /**
    * Keeps original slides for restoration.

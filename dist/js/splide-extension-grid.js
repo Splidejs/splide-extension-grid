@@ -88,6 +88,7 @@
     };
   }
 
+  var CLASS_ROOT = PROJECT_CODE;
   var CLASS_SLIDE = PROJECT_CODE + "__slide";
   var CLASS_CONTAINER = CLASS_SLIDE + "__container";
 
@@ -488,7 +489,7 @@
     var gridOptions = {};
     var Dimension2 = Dimension(gridOptions);
     var Layout3 = Layout2(Splide4, gridOptions, Dimension2);
-    var modifier = CLASS_SLIDE + "--grid";
+    var modifier = CLASS_ROOT + "--grid";
     var originalSlides = [];
 
     function setup() {
