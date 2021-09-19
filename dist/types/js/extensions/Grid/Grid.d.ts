@@ -11,9 +11,6 @@ declare module '@splidejs/splide' {
 /**
  * The extension for the grid slider.
  *
- * @todo index after refresh (arrows are disabled)
- * @todo restore slide ID?
- *
  * @since 0.5.0
  *
  * @param Splide     - A Splide instance.

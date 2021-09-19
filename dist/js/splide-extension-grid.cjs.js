@@ -19,8 +19,6 @@ function toArray(value) {
 function forEach(values, iteratee) {
   toArray(values).forEach(iteratee);
 }
-var CLASS_SLIDE = `${PROJECT_CODE}__slide`;
-var CLASS_CONTAINER = `${CLASS_SLIDE}__container`;
 var EVENT_VISIBLE = "visible";
 var EVENT_HIDDEN = "hidden";
 var EVENT_REFRESH = "refresh";
@@ -74,6 +72,8 @@ function EventInterface(Splide22) {
     destroy
   };
 }
+var CLASS_SLIDE = `${PROJECT_CODE}__slide`;
+var CLASS_CONTAINER = `${CLASS_SLIDE}__container`;
 
 // ../splide/src/js/utils/array/empty/empty.ts
 function empty2(array) {
@@ -229,11 +229,6 @@ function hasClass2(elm, className) {
   return elm && elm.classList.contains(className);
 }
 
-// ../splide/src/js/utils/dom/queryAll/queryAll.ts
-function queryAll2(parent, selector) {
-  return slice2(parent.querySelectorAll(selector));
-}
-
 // ../splide/src/js/utils/dom/remove/remove.ts
 function remove2(nodes) {
   forEach2(nodes, (node) => {
@@ -241,6 +236,11 @@ function remove2(nodes) {
       node.parentNode.removeChild(node);
     }
   });
+}
+
+// ../splide/src/js/utils/dom/queryAll/queryAll.ts
+function queryAll2(parent, selector) {
+  return slice2(parent.querySelectorAll(selector));
 }
 
 // ../splide/src/js/utils/dom/removeClass/removeClass.ts
@@ -448,30 +448,31 @@ function Grid(Splide4, Components2, options) {
   }
   function init() {
     assign2(gridOptions, options.grid || DEFAULTS2);
-    console.log("init");
-    if (shouldInit()) {
+    if (shouldBuild()) {
       if (isActive()) {
         destroy();
-        refresh();
       }
       push2(originalSlides, Elements2.slides);
       addClass2(Splide4.root, modifier);
       append2(Elements2.list, build());
       on(EVENT_REFRESH, layout);
       refresh();
-    } else if (originalSlides.length) {
+    } else if (isActive()) {
       destroy();
       refresh();
     }
   }
   function destroy() {
+    const { slides } = Elements2;
     Layout3.destroy();
     originalSlides.forEach((slide) => {
       removeClass2(slide, CLASS_SLIDE_COL);
       append2(Elements2.list, slide);
     });
-    remove2(Elements2.slides);
+    remove2(slides);
     removeClass2(Splide4.root, modifier);
+    empty2(slides);
+    push2(slides, originalSlides);
     empty2(originalSlides);
     off(EVENT_REFRESH);
   }
@@ -487,8 +488,7 @@ function Grid(Splide4, Components2, options) {
     const outerSlides = [];
     let row = 0, col = 0;
     let outerSlide, rowSlide;
-    Components2.Slides.forEach((Slide2) => {
-      const { slide, index } = Slide2;
+    originalSlides.forEach((slide, index) => {
       const [rows, cols] = Dimension2.getAt(index);
       if (!col) {
         if (!row) {
@@ -502,8 +502,7 @@ function Grid(Splide4, Components2, options) {
         col = 0;
         row = ++row >= rows ? 0 : row;
       }
-      Slide2.destroy();
-    }, true);
+    });
     return outerSlides;
   }
   function buildRow(rows, slide, outerSlide) {
@@ -515,7 +514,7 @@ function Grid(Splide4, Components2, options) {
     append2(rowSlide, slide);
     return slide;
   }
-  function shouldInit() {
+  function shouldBuild() {
     if (options.grid) {
       const { rows, cols, dimensions } = gridOptions;
       return rows > 1 || cols > 1 || isArray2(dimensions) && dimensions.length > 0;

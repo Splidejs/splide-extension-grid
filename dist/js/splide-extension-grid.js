@@ -23,8 +23,6 @@
     toArray(values).forEach(iteratee);
   }
 
-  var CLASS_SLIDE = PROJECT_CODE + "__slide";
-  var CLASS_CONTAINER = CLASS_SLIDE + "__container";
   var EVENT_VISIBLE = "visible";
   var EVENT_HIDDEN = "hidden";
   var EVENT_REFRESH = "refresh";
@@ -89,6 +87,9 @@
       destroy: destroy
     };
   }
+
+  var CLASS_SLIDE = PROJECT_CODE + "__slide";
+  var CLASS_CONTAINER = CLASS_SLIDE + "__container";
 
   function empty2(array) {
     array.length = 0;
@@ -240,16 +241,16 @@
     return elm && elm.classList.contains(className);
   }
 
-  function queryAll2(parent, selector) {
-    return slice2(parent.querySelectorAll(selector));
-  }
-
   function remove2(nodes) {
     forEach2(nodes, function (node) {
       if (node && node.parentNode) {
         node.parentNode.removeChild(node);
       }
     });
+  }
+
+  function queryAll2(parent, selector) {
+    return slice2(parent.querySelectorAll(selector));
   }
 
   function removeClass2(elm, classes) {
