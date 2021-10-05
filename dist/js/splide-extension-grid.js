@@ -26,7 +26,7 @@
   var EVENT_VISIBLE = "visible";
   var EVENT_HIDDEN = "hidden";
   var EVENT_REFRESH = "refresh";
-  var EVENT_UPDATED = "undated";
+  var EVENT_UPDATED = "updated";
   var EVENT_DESTROY = "destroy";
 
   function EventInterface(Splide22) {
@@ -150,7 +150,7 @@
   }
 
   function addClass2(elm, classes) {
-    toggleClass2(elm, classes, true);
+    toggleClass2(elm, isString2(classes) ? classes.split(" ") : classes, true);
   }
 
   function append2(parent, children3) {
@@ -190,11 +190,7 @@
   }
 
   function assign2(object) {
-    for (var _len = arguments.length, sources = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
-      sources[_key - 1] = arguments[_key];
-    }
-
-    sources.forEach(function (source) {
+    slice2(arguments, 1).forEach(function (source) {
       forOwn2(source, function (value, key) {
         object[key] = source[key];
       });
@@ -224,17 +220,10 @@
     var elm = document.createElement(tag);
 
     if (attrs) {
-      if (isString2(attrs) || isArray2(attrs)) {
-        addClass2(elm, attrs);
-      } else {
-        setAttribute2(elm, attrs);
-      }
+      isString2(attrs) ? addClass2(elm, attrs) : setAttribute2(elm, attrs);
     }
 
-    if (parent) {
-      append2(parent, elm);
-    }
-
+    parent && append2(parent, elm);
     return elm;
   }
 
@@ -278,8 +267,7 @@
       max2 = Math.max,
       floor2 = Math.floor,
       ceil2 = Math.ceil,
-      abs2 = Math.abs,
-      round2 = Math.round;
+      abs2 = Math.abs;
 
   function pad2(number) {
     return number < 10 ? "0" + number : "" + number;
@@ -334,7 +322,7 @@
     };
   }
 
-  function Style2() {
+  function Style() {
     var style3;
     var sheet;
 
@@ -356,7 +344,12 @@
       }) || cssRules[sheet.insertRule(selector + "{}", 0)];
 
       if (isCSSStyleRule(cssRule)) {
-        cssRule.style[prop] = "" + value;
+        var style4 = cssRule.style;
+        value = "" + value;
+
+        if (style4[prop] !== value) {
+          style4[prop] = value;
+        }
       }
     }
 
@@ -385,11 +378,11 @@
         options = Splide4.options;
     var resolve = Components2.Direction.resolve;
     var forEach3 = Components2.Slides.forEach;
-    var Style3 = Style2();
-    var rule = Style3.rule;
+    var Style2 = Style();
+    var rule = Style2.rule;
 
     function mount() {
-      Style3.mount();
+      Style2.mount();
       layout();
 
       if (options.slideFocus) {
@@ -402,7 +395,7 @@
       forEach3(function (Slide2) {
         toggleTabIndex(Slide2.slide, false);
       });
-      Style3.destroy();
+      Style2.destroy();
       destroyEvent();
     }
 

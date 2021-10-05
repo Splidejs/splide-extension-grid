@@ -8,7 +8,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-// ../splide/dist/js/splide.esm.js
+// node_modules/@splidejs/splide/dist/js/splide.esm.js
 var PROJECT_CODE = "splide";
 function isArray(subject) {
   return Array.isArray(subject);
@@ -22,7 +22,7 @@ function forEach(values, iteratee) {
 var EVENT_VISIBLE = "visible";
 var EVENT_HIDDEN = "hidden";
 var EVENT_REFRESH = "refresh";
-var EVENT_UPDATED = "undated";
+var EVENT_UPDATED = "updated";
 var EVENT_DESTROY = "destroy";
 function EventInterface(Splide22) {
   const { event } = Splide22;
@@ -76,12 +76,12 @@ var CLASS_ROOT = PROJECT_CODE;
 var CLASS_SLIDE = `${PROJECT_CODE}__slide`;
 var CLASS_CONTAINER = `${CLASS_SLIDE}__container`;
 
-// ../splide/src/js/utils/array/empty/empty.ts
+// node_modules/@splidejs/splide/src/js/utils/array/empty/empty.ts
 function empty2(array) {
   array.length = 0;
 }
 
-// ../splide/src/js/utils/type/type.ts
+// node_modules/@splidejs/splide/src/js/utils/type/type.ts
 function isObject2(subject) {
   return !isNull2(subject) && typeof subject === "object";
 }
@@ -98,36 +98,36 @@ function isHTMLElement2(subject) {
   return subject instanceof HTMLElement;
 }
 
-// ../splide/src/js/utils/array/toArray/toArray.ts
+// node_modules/@splidejs/splide/src/js/utils/array/toArray/toArray.ts
 function toArray2(value) {
   return isArray2(value) ? value : [value];
 }
 
-// ../splide/src/js/utils/array/forEach/forEach.ts
+// node_modules/@splidejs/splide/src/js/utils/array/forEach/forEach.ts
 function forEach2(values, iteratee) {
   toArray2(values).forEach(iteratee);
 }
 
-// ../splide/src/js/utils/array/push/push.ts
+// node_modules/@splidejs/splide/src/js/utils/array/push/push.ts
 function push2(array, items) {
   array.push(...toArray2(items));
   return array;
 }
 
-// ../splide/src/js/utils/array/index.ts
+// node_modules/@splidejs/splide/src/js/utils/array/index.ts
 var arrayProto2 = Array.prototype;
 
-// ../splide/src/js/utils/arrayLike/slice/slice.ts
+// node_modules/@splidejs/splide/src/js/utils/arrayLike/slice/slice.ts
 function slice2(arrayLike, start, end) {
   return arrayProto2.slice.call(arrayLike, start, end);
 }
 
-// ../splide/src/js/utils/arrayLike/find/find.ts
+// node_modules/@splidejs/splide/src/js/utils/arrayLike/find/find.ts
 function find2(arrayLike, predicate) {
   return slice2(arrayLike).filter(predicate)[0];
 }
 
-// ../splide/src/js/utils/dom/toggleClass/toggleClass.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/toggleClass/toggleClass.ts
 function toggleClass2(elm, classes, add) {
   if (elm) {
     forEach2(classes, (name) => {
@@ -138,32 +138,32 @@ function toggleClass2(elm, classes, add) {
   }
 }
 
-// ../splide/src/js/utils/dom/addClass/addClass.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/addClass/addClass.ts
 function addClass2(elm, classes) {
-  toggleClass2(elm, classes, true);
+  toggleClass2(elm, isString2(classes) ? classes.split(" ") : classes, true);
 }
 
-// ../splide/src/js/utils/dom/append/append.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/append/append.ts
 function append2(parent, children3) {
   forEach2(children3, parent.appendChild.bind(parent));
 }
 
-// ../splide/src/js/utils/dom/matches/matches.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/matches/matches.ts
 function matches2(elm, selector) {
   return (elm["msMatchesSelector"] || elm.matches).call(elm, selector);
 }
 
-// ../splide/src/js/utils/dom/children/children.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/children/children.ts
 function children2(parent, selector) {
   return parent ? slice2(parent.children).filter((child3) => matches2(child3, selector)) : [];
 }
 
-// ../splide/src/js/utils/dom/child/child.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/child/child.ts
 function child2(parent, selector) {
   return selector ? children2(parent, selector)[0] : parent.firstElementChild;
 }
 
-// ../splide/src/js/utils/object/forOwn/forOwn.ts
+// node_modules/@splidejs/splide/src/js/utils/object/forOwn/forOwn.ts
 function forOwn2(object, iteratee) {
   if (object) {
     const keys = Object.keys(object);
@@ -179,9 +179,9 @@ function forOwn2(object, iteratee) {
   return object;
 }
 
-// ../splide/src/js/utils/object/assign/assign.ts
-function assign2(object, ...sources) {
-  sources.forEach((source) => {
+// node_modules/@splidejs/splide/src/js/utils/object/assign/assign.ts
+function assign2(object) {
+  slice2(arguments, 1).forEach((source) => {
     forOwn2(source, (value, key) => {
       object[key] = source[key];
     });
@@ -189,7 +189,7 @@ function assign2(object, ...sources) {
   return object;
 }
 
-// ../splide/src/js/utils/dom/removeAttribute/removeAttribute.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/removeAttribute/removeAttribute.ts
 function removeAttribute2(elm, attrs) {
   if (elm) {
     forEach2(attrs, (attr) => {
@@ -198,7 +198,7 @@ function removeAttribute2(elm, attrs) {
   }
 }
 
-// ../splide/src/js/utils/dom/setAttribute/setAttribute.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/setAttribute/setAttribute.ts
 function setAttribute2(elm, attrs, value) {
   if (isObject2(attrs)) {
     forOwn2(attrs, (value2, name) => {
@@ -209,28 +209,22 @@ function setAttribute2(elm, attrs, value) {
   }
 }
 
-// ../splide/src/js/utils/dom/create/create.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/create/create.ts
 function create2(tag, attrs, parent) {
   const elm = document.createElement(tag);
   if (attrs) {
-    if (isString2(attrs) || isArray2(attrs)) {
-      addClass2(elm, attrs);
-    } else {
-      setAttribute2(elm, attrs);
-    }
+    isString2(attrs) ? addClass2(elm, attrs) : setAttribute2(elm, attrs);
   }
-  if (parent) {
-    append2(parent, elm);
-  }
+  parent && append2(parent, elm);
   return elm;
 }
 
-// ../splide/src/js/utils/dom/hasClass/hasClass.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/hasClass/hasClass.ts
 function hasClass2(elm, className) {
   return elm && elm.classList.contains(className);
 }
 
-// ../splide/src/js/utils/dom/remove/remove.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/remove/remove.ts
 function remove2(nodes) {
   forEach2(nodes, (node) => {
     if (node && node.parentNode) {
@@ -239,35 +233,35 @@ function remove2(nodes) {
   });
 }
 
-// ../splide/src/js/utils/dom/queryAll/queryAll.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/queryAll/queryAll.ts
 function queryAll2(parent, selector) {
   return slice2(parent.querySelectorAll(selector));
 }
 
-// ../splide/src/js/utils/dom/removeClass/removeClass.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/removeClass/removeClass.ts
 function removeClass2(elm, classes) {
   toggleClass2(elm, classes, false);
 }
 
-// ../splide/src/js/utils/dom/unit/unit.ts
+// node_modules/@splidejs/splide/src/js/utils/dom/unit/unit.ts
 function unit2(value) {
   return isString2(value) ? value : value ? `${value}px` : "";
 }
 
-// ../splide/src/js/constants/project.ts
+// node_modules/@splidejs/splide/src/js/constants/project.ts
 var PROJECT_CODE2 = "splide";
 
-// ../splide/src/js/utils/error/assert/assert.ts
+// node_modules/@splidejs/splide/src/js/utils/error/assert/assert.ts
 function assert2(condition, message = "") {
   if (!condition) {
     throw new Error(`[${PROJECT_CODE2}] ${message}`);
   }
 }
 
-// ../splide/src/js/utils/math/index.ts
-var { min: min2, max: max2, floor: floor2, ceil: ceil2, abs: abs2, round: round2 } = Math;
+// node_modules/@splidejs/splide/src/js/utils/math/math/math.ts
+var { min: min2, max: max2, floor: floor2, ceil: ceil2, abs: abs2 } = Math;
 
-// ../splide/src/js/utils/string/pad/pad.ts
+// node_modules/@splidejs/splide/src/js/utils/string/pad/pad.ts
 function pad2(number) {
   return number < 10 ? `0${number}` : `${number}`;
 }
@@ -315,8 +309,8 @@ function Dimension(options) {
   };
 }
 
-// ../splide/src/js/components/Style/Style.ts
-function Style2() {
+// node_modules/@splidejs/splide/src/js/components/Style/Style.ts
+function Style() {
   let style3;
   let sheet;
   function mount() {
@@ -331,7 +325,11 @@ function Style2() {
     const { cssRules } = sheet;
     const cssRule = find2(cssRules, (cssRule2) => isCSSStyleRule(cssRule2) && cssRule2.selectorText === selector) || cssRules[sheet.insertRule(`${selector}{}`, 0)];
     if (isCSSStyleRule(cssRule)) {
-      cssRule.style[prop] = `${value}`;
+      const { style: style4 } = cssRule;
+      value = `${value}`;
+      if (style4[prop] !== value) {
+        style4[prop] = value;
+      }
     }
   }
   function ruleBy(target, prop, value) {
@@ -354,10 +352,10 @@ function Layout2(Splide4, gridOptions, Dimension2) {
   const { Components: Components2, options } = Splide4;
   const { resolve } = Components2.Direction;
   const { forEach: forEach3 } = Components2.Slides;
-  const Style3 = Style2();
-  const { rule } = Style3;
+  const Style2 = Style();
+  const { rule } = Style2;
   function mount() {
-    Style3.mount();
+    Style2.mount();
     layout();
     if (options.slideFocus) {
       on(EVENT_VISIBLE, onVisible);
@@ -368,7 +366,7 @@ function Layout2(Splide4, gridOptions, Dimension2) {
     forEach3((Slide2) => {
       toggleTabIndex(Slide2.slide, false);
     });
-    Style3.destroy();
+    Style2.destroy();
     destroyEvent();
   }
   function layout() {
@@ -458,6 +456,7 @@ function Grid(Splide4, Components2, options) {
       append2(Elements2.list, build());
       on(EVENT_REFRESH, layout);
       refresh();
+      Components2.Move.jump(Splide4.index);
     } else if (isActive()) {
       destroy();
       refresh();
