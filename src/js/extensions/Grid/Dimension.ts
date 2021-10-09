@@ -53,7 +53,7 @@ export function Dimension( options: GridOptions ): DimensionComponent {
   function getAt( index: number ): [ number, number ] {
     const dimensions = normalize();
 
-    let rows, cols, aggregator = 0
+    let rows, cols, aggregator = 0;
 
     for ( let i = 0; i < dimensions.length; i++ ) {
       const dimension = dimensions[ i ];
@@ -75,5 +75,5 @@ export function Dimension( options: GridOptions ): DimensionComponent {
   return {
     get,
     getAt,
-  }
+  };
 }

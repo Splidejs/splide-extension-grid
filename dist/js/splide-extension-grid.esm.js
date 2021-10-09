@@ -1,10 +1,10 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.3.0
+ * Version  : 0.3.1
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */
-// node_modules/@splidejs/splide/dist/js/splide.esm.js
+// ../splide/dist/js/splide.esm.js
 var PROJECT_CODE = "splide";
 function isArray(subject) {
   return Array.isArray(subject);
@@ -36,10 +36,10 @@ function EventInterface(Splide22) {
       target.addEventListener(event2, callback, options);
     });
   }
-  function unbind(targets, events) {
+  function unbind(targets, events, callback) {
     forEachEvent(targets, events, (target, event2) => {
       listeners = listeners.filter((listener) => {
-        if (listener[0] === target && listener[1] === event2) {
+        if (listener[0] === target && listener[1] === event2 && (!callback || listener[2] === callback)) {
           target.removeEventListener(event2, listener[2], listener[3]);
           return false;
         }
@@ -72,12 +72,12 @@ var CLASS_ROOT = PROJECT_CODE;
 var CLASS_SLIDE = `${PROJECT_CODE}__slide`;
 var CLASS_CONTAINER = `${CLASS_SLIDE}__container`;
 
-// node_modules/@splidejs/splide/src/js/utils/array/empty/empty.ts
+// ../splide/src/js/utils/array/empty/empty.ts
 function empty2(array) {
   array.length = 0;
 }
 
-// node_modules/@splidejs/splide/src/js/utils/type/type.ts
+// ../splide/src/js/utils/type/type.ts
 function isObject2(subject) {
   return !isNull2(subject) && typeof subject === "object";
 }
@@ -87,43 +87,38 @@ function isArray2(subject) {
 function isString2(subject) {
   return typeof subject === "string";
 }
+function isUndefined2(subject) {
+  return typeof subject === "undefined";
+}
 function isNull2(subject) {
   return subject === null;
 }
-function isHTMLElement2(subject) {
-  return subject instanceof HTMLElement;
-}
 
-// node_modules/@splidejs/splide/src/js/utils/array/toArray/toArray.ts
+// ../splide/src/js/utils/array/toArray/toArray.ts
 function toArray2(value) {
   return isArray2(value) ? value : [value];
 }
 
-// node_modules/@splidejs/splide/src/js/utils/array/forEach/forEach.ts
+// ../splide/src/js/utils/array/forEach/forEach.ts
 function forEach2(values, iteratee) {
   toArray2(values).forEach(iteratee);
 }
 
-// node_modules/@splidejs/splide/src/js/utils/array/push/push.ts
+// ../splide/src/js/utils/array/push/push.ts
 function push2(array, items) {
   array.push(...toArray2(items));
   return array;
 }
 
-// node_modules/@splidejs/splide/src/js/utils/array/index.ts
+// ../splide/src/js/utils/array/index.ts
 var arrayProto2 = Array.prototype;
 
-// node_modules/@splidejs/splide/src/js/utils/arrayLike/slice/slice.ts
+// ../splide/src/js/utils/arrayLike/slice/slice.ts
 function slice2(arrayLike, start, end) {
   return arrayProto2.slice.call(arrayLike, start, end);
 }
 
-// node_modules/@splidejs/splide/src/js/utils/arrayLike/find/find.ts
-function find2(arrayLike, predicate) {
-  return slice2(arrayLike).filter(predicate)[0];
-}
-
-// node_modules/@splidejs/splide/src/js/utils/dom/toggleClass/toggleClass.ts
+// ../splide/src/js/utils/dom/toggleClass/toggleClass.ts
 function toggleClass2(elm, classes, add) {
   if (elm) {
     forEach2(classes, (name) => {
@@ -134,32 +129,32 @@ function toggleClass2(elm, classes, add) {
   }
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/addClass/addClass.ts
+// ../splide/src/js/utils/dom/addClass/addClass.ts
 function addClass2(elm, classes) {
   toggleClass2(elm, isString2(classes) ? classes.split(" ") : classes, true);
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/append/append.ts
+// ../splide/src/js/utils/dom/append/append.ts
 function append2(parent, children3) {
   forEach2(children3, parent.appendChild.bind(parent));
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/matches/matches.ts
+// ../splide/src/js/utils/dom/matches/matches.ts
 function matches2(elm, selector) {
   return (elm["msMatchesSelector"] || elm.matches).call(elm, selector);
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/children/children.ts
+// ../splide/src/js/utils/dom/children/children.ts
 function children2(parent, selector) {
   return parent ? slice2(parent.children).filter((child3) => matches2(child3, selector)) : [];
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/child/child.ts
+// ../splide/src/js/utils/dom/child/child.ts
 function child2(parent, selector) {
   return selector ? children2(parent, selector)[0] : parent.firstElementChild;
 }
 
-// node_modules/@splidejs/splide/src/js/utils/object/forOwn/forOwn.ts
+// ../splide/src/js/utils/object/forOwn/forOwn.ts
 function forOwn2(object, iteratee) {
   if (object) {
     const keys = Object.keys(object);
@@ -175,7 +170,7 @@ function forOwn2(object, iteratee) {
   return object;
 }
 
-// node_modules/@splidejs/splide/src/js/utils/object/assign/assign.ts
+// ../splide/src/js/utils/object/assign/assign.ts
 function assign2(object) {
   slice2(arguments, 1).forEach((source) => {
     forOwn2(source, (value, key) => {
@@ -185,7 +180,7 @@ function assign2(object) {
   return object;
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/removeAttribute/removeAttribute.ts
+// ../splide/src/js/utils/dom/removeAttribute/removeAttribute.ts
 function removeAttribute2(elm, attrs) {
   if (elm) {
     forEach2(attrs, (attr) => {
@@ -194,7 +189,7 @@ function removeAttribute2(elm, attrs) {
   }
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/setAttribute/setAttribute.ts
+// ../splide/src/js/utils/dom/setAttribute/setAttribute.ts
 function setAttribute2(elm, attrs, value) {
   if (isObject2(attrs)) {
     forOwn2(attrs, (value2, name) => {
@@ -205,7 +200,7 @@ function setAttribute2(elm, attrs, value) {
   }
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/create/create.ts
+// ../splide/src/js/utils/dom/create/create.ts
 function create2(tag, attrs, parent) {
   const elm = document.createElement(tag);
   if (attrs) {
@@ -215,12 +210,26 @@ function create2(tag, attrs, parent) {
   return elm;
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/hasClass/hasClass.ts
+// ../splide/src/js/utils/dom/style/style.ts
+function style2(elm, prop, value) {
+  if (isUndefined2(value)) {
+    return getComputedStyle(elm)[prop];
+  }
+  if (!isNull2(value)) {
+    const { style: style3 } = elm;
+    value = `${value}`;
+    if (style3[prop] !== value) {
+      style3[prop] = value;
+    }
+  }
+}
+
+// ../splide/src/js/utils/dom/hasClass/hasClass.ts
 function hasClass2(elm, className) {
   return elm && elm.classList.contains(className);
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/remove/remove.ts
+// ../splide/src/js/utils/dom/remove/remove.ts
 function remove2(nodes) {
   forEach2(nodes, (node) => {
     if (node && node.parentNode) {
@@ -229,35 +238,35 @@ function remove2(nodes) {
   });
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/queryAll/queryAll.ts
+// ../splide/src/js/utils/dom/queryAll/queryAll.ts
 function queryAll2(parent, selector) {
   return slice2(parent.querySelectorAll(selector));
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/removeClass/removeClass.ts
+// ../splide/src/js/utils/dom/removeClass/removeClass.ts
 function removeClass2(elm, classes) {
   toggleClass2(elm, classes, false);
 }
 
-// node_modules/@splidejs/splide/src/js/utils/dom/unit/unit.ts
+// ../splide/src/js/utils/dom/unit/unit.ts
 function unit2(value) {
   return isString2(value) ? value : value ? `${value}px` : "";
 }
 
-// node_modules/@splidejs/splide/src/js/constants/project.ts
+// ../splide/src/js/constants/project.ts
 var PROJECT_CODE2 = "splide";
 
-// node_modules/@splidejs/splide/src/js/utils/error/assert/assert.ts
+// ../splide/src/js/utils/error/assert/assert.ts
 function assert2(condition, message = "") {
   if (!condition) {
     throw new Error(`[${PROJECT_CODE2}] ${message}`);
   }
 }
 
-// node_modules/@splidejs/splide/src/js/utils/math/math/math.ts
+// ../splide/src/js/utils/math/math/math.ts
 var { min: min2, max: max2, floor: floor2, ceil: ceil2, abs: abs2 } = Math;
 
-// node_modules/@splidejs/splide/src/js/utils/string/pad/pad.ts
+// ../splide/src/js/utils/string/pad/pad.ts
 function pad2(number) {
   return number < 10 ? `0${number}` : `${number}`;
 }
@@ -305,53 +314,13 @@ function Dimension(options) {
   };
 }
 
-// node_modules/@splidejs/splide/src/js/components/Style/Style.ts
-function Style() {
-  let style3;
-  let sheet;
-  function mount() {
-    style3 = create2("style", {}, document.head);
-    sheet = style3.sheet;
-  }
-  function destroy() {
-    remove2(style3);
-    sheet = null;
-  }
-  function rule(selector, prop, value) {
-    const { cssRules } = sheet;
-    const cssRule = find2(cssRules, (cssRule2) => isCSSStyleRule(cssRule2) && cssRule2.selectorText === selector) || cssRules[sheet.insertRule(`${selector}{}`, 0)];
-    if (isCSSStyleRule(cssRule)) {
-      const { style: style4 } = cssRule;
-      value = `${value}`;
-      if (style4[prop] !== value) {
-        style4[prop] = value;
-      }
-    }
-  }
-  function ruleBy(target, prop, value) {
-    rule(`#${isHTMLElement2(target) ? target.id : target}`, prop, value);
-  }
-  function isCSSStyleRule(cssRule) {
-    return cssRule instanceof CSSStyleRule;
-  }
-  return {
-    mount,
-    destroy,
-    rule,
-    ruleBy
-  };
-}
-
 // src/js/extensions/Grid/Layout.ts
 function Layout2(Splide4, gridOptions, Dimension2) {
   const { on, destroy: destroyEvent } = EventInterface(Splide4);
   const { Components: Components2, options } = Splide4;
   const { resolve } = Components2.Direction;
   const { forEach: forEach3 } = Components2.Slides;
-  const Style2 = Style();
-  const { rule } = Style2;
   function mount() {
-    Style2.mount();
     layout();
     if (options.slideFocus) {
       on(EVENT_VISIBLE, onVisible);
@@ -360,53 +329,62 @@ function Layout2(Splide4, gridOptions, Dimension2) {
   }
   function destroy() {
     forEach3((Slide2) => {
-      toggleTabIndex(Slide2.slide, false);
+      const { slide } = Slide2;
+      toggleTabIndex(slide, false);
+      getRowsIn(slide).concat(getColsIn(slide)).forEach((cell) => {
+        removeAttribute2(cell, "style");
+      });
     });
-    Style2.destroy();
     destroyEvent();
   }
   function layout() {
     forEach3((Slide2) => {
       const { slide } = Slide2;
       const [rows, cols] = Dimension2.get(Slide2.isClone ? Slide2.slideIndex : Slide2.index);
-      const rowSelector = buildSelector(slide);
-      layoutRow(rows, rowSelector);
-      layoutCol(cols, buildSelector(slide, true));
+      layoutRow(rows, slide);
+      layoutCol(cols, slide);
       getColsIn(Slide2.slide).forEach((colSlide, index) => {
         colSlide.id = `${Slide2.slide.id}-col${pad2(index + 1)}`;
         cover(colSlide);
       });
     });
   }
-  function layoutRow(rows, selector) {
+  function layoutRow(rows, slide) {
     const { row: rowGap } = gridOptions.gap;
     const height = `calc(${100 / rows}%${rowGap ? ` - ${unit2(rowGap)} * ${(rows - 1) / rows}` : ""})`;
-    rule(selector, "height", height);
-    rule(selector, "display", "flex");
-    rule(selector, "margin", `0 0 ${unit2(rowGap)} 0`);
-    rule(selector, "padding", 0);
-    rule(`${selector}:last-child`, "marginBottom", 0);
+    getRowsIn(slide).forEach((rowElm, index, rowElms) => {
+      style2(rowElm, "height", height);
+      style2(rowElm, "display", "flex");
+      style2(rowElm, "margin", `0 0 ${unit2(rowGap)} 0`);
+      style2(rowElm, "padding", 0);
+      if (index === rowElms.length - 1) {
+        style2(rowElm, "marginBottom", 0);
+      }
+    });
   }
-  function layoutCol(cols, selector) {
+  function layoutCol(cols, slide) {
     const { col: colGap } = gridOptions.gap;
     const width = `calc(${100 / cols}%${colGap ? ` - ${unit2(colGap)} * ${(cols - 1) / cols}` : ""})`;
-    rule(selector, "width", width);
-    rule(`${selector}:not(:last-child)`, resolve("marginRight"), unit2(colGap));
+    getColsIn(slide).forEach((colElm, index, colElms) => {
+      style2(colElm, "width", width);
+      if (index !== colElms.length - 1) {
+        style2(colElm, resolve("marginRight"), unit2(colGap));
+      }
+    });
   }
   function cover(colSlide) {
     const container = child2(colSlide, `.${CLASS_CONTAINER}`);
     const img = child2(container || colSlide, "img");
     if (img && img.src) {
-      const selector = `#${colSlide.id}${container ? ` > .${CLASS_CONTAINER}` : ""}`;
-      rule(selector, "background", `center/cover no-repeat url("${img.src}")`);
-      rule(`${selector} > img`, "display", "none");
+      style2(container || colSlide, "background", `center/cover no-repeat url("${img.src}")`);
+      style2(img, "display", "none");
     }
   }
-  function buildSelector(slide, col) {
-    return `#${slide.id} > .${CLASS_SLIDE_ROW}${col ? ` > .${CLASS_SLIDE_COL}` : ""}`;
+  function getRowsIn(slide) {
+    return queryAll2(slide, `.${CLASS_SLIDE_ROW}`);
   }
   function getColsIn(slide) {
-    return queryAll2(slide.parentElement, buildSelector(slide, true));
+    return queryAll2(slide, `.${CLASS_SLIDE_COL}`);
   }
   function toggleTabIndex(slide, add) {
     getColsIn(slide).forEach((colSlide) => {
@@ -452,7 +430,6 @@ function Grid(Splide4, Components2, options) {
       append2(Elements2.list, build());
       on(EVENT_REFRESH, layout);
       refresh();
-      Components2.Move.jump(Splide4.index);
     } else if (isActive()) {
       destroy();
       refresh();
@@ -528,7 +505,7 @@ function Grid(Splide4, Components2, options) {
 }
 /*!
  * Splide.js
- * Version  : 3.0.0
+ * Version  : 3.1.0
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */

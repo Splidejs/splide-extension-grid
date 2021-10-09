@@ -1,7 +1,6 @@
 import { CLASS_CONTAINER, EVENT_HIDDEN, EVENT_VISIBLE, EventInterface, Splide } from '@splidejs/splide';
 import { SlideComponent } from '@splidejs/splide/src/js/components/Slides/Slide';
-import { Style as StyleConstructor } from '@splidejs/splide/src/js/components/Style/Style';
-import { child, pad, queryAll, setAttribute, unit } from '@splidejs/splide/src/js/utils';
+import { child, pad, queryAll, setAttribute, unit, style, removeAttribute } from '@splidejs/splide/src/js/utils';
 import { CLASS_SLIDE_COL, CLASS_SLIDE_ROW } from '../../constants/classes';
 import { GridOptions } from '../../types/options';
 import { DimensionComponent } from './Dimension';
@@ -33,15 +32,11 @@ export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: Dim
   const { Components, options } = Splide;
   const { resolve } = Components.Direction;
   const { forEach } = Components.Slides;
-  const Style = StyleConstructor();
-  const { rule } = Style;
 
   /**
    * Initializes the component.
    */
   function mount(): void {
-    Style.mount();
-
     layout();
 
     if ( options.slideFocus ) {
@@ -55,10 +50,14 @@ export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: Dim
    */
   function destroy(): void {
     forEach( Slide => {
-      toggleTabIndex( Slide.slide, false );
+      const { slide } = Slide;
+      toggleTabIndex( slide, false );
+
+      getRowsIn( slide ).concat( getColsIn( slide ) ).forEach( cell => {
+        removeAttribute( cell, 'style' );
+      } );
     } );
 
-    Style.destroy();
     destroyEvent();
   }
 
@@ -69,10 +68,9 @@ export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: Dim
     forEach( Slide => {
       const { slide } = Slide;
       const [ rows, cols ] = Dimension.get( Slide.isClone ? Slide.slideIndex : Slide.index );
-      const rowSelector = buildSelector( slide );
 
-      layoutRow( rows, rowSelector );
-      layoutCol( cols, buildSelector( slide, true ) );
+      layoutRow( rows, slide );
+      layoutCol( cols, slide );
 
       getColsIn( Slide.slide ).forEach( ( colSlide, index ) => {
         colSlide.id = `${ Slide.slide.id }-col${ pad( index + 1 ) }`;
@@ -84,32 +82,42 @@ export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: Dim
   /**
    * Layouts row elements by CSS.
    *
-   * @param rows     - A number of rows.
-   * @param selector - A selector.
+   * @param rows  - A number of rows.
+   * @param slide - A slide element.
    */
-  function layoutRow( rows: number, selector: string ): void {
+  function layoutRow( rows: number, slide: HTMLElement ): void {
     const { row: rowGap } = gridOptions.gap;
-    const height = `calc(${ 100 / rows }%${ rowGap ? ` - ${ unit( rowGap ) } * ${ ( rows - 1 ) / rows }` : '' })`;
+    const height  = `calc(${ 100 / rows }%${ rowGap ? ` - ${ unit( rowGap ) } * ${ ( rows - 1 ) / rows }` : '' })`;
 
-    rule( selector, 'height', height );
-    rule( selector, 'display', 'flex' );
-    rule( selector, 'margin', `0 0 ${ unit( rowGap ) } 0` );
-    rule( selector, 'padding', 0 );
-    rule( `${ selector }:last-child`, 'marginBottom', 0 );
+    getRowsIn( slide ).forEach( ( rowElm, index, rowElms ) => {
+      style( rowElm, 'height', height );
+      style( rowElm, 'display', 'flex' );
+      style( rowElm, 'margin', `0 0 ${ unit( rowGap ) } 0` );
+      style( rowElm, 'padding', 0 );
+
+      if ( index === rowElms.length - 1 ) {
+        style( rowElm, 'marginBottom', 0 );
+      }
+    } );
   }
 
   /**
    * Layouts col elements by CSS.
    *
-   * @param cols     - A number of cols.
-   * @param selector - A selector.
+   * @param cols  - A number of cols.
+   * @param slide - A slide element.
    */
-  function layoutCol( cols: number, selector: string ): void {
+  function layoutCol( cols: number, slide: HTMLElement ): void {
     const { col: colGap } = gridOptions.gap;
     const width = `calc(${ 100 / cols }%${ colGap ? ` - ${ unit( colGap ) } * ${ ( cols - 1 ) / cols }` : '' })`;
 
-    rule( selector, 'width', width );
-    rule( `${ selector }:not(:last-child)`, resolve( 'marginRight' ), unit( colGap ) );
+    getColsIn( slide ).forEach( ( colElm, index, colElms ) => {
+      style( colElm, 'width', width );
+
+      if ( index !== colElms.length - 1 ) {
+        style( colElm, resolve( 'marginRight' ), unit( colGap ) );
+      }
+    } );
   }
 
   /**
@@ -122,20 +130,20 @@ export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: Dim
     const img       = child<HTMLImageElement>( container || colSlide, 'img' );
 
     if ( img && img.src ) {
-      const selector = `#${ colSlide.id }${ container ? ` > .${ CLASS_CONTAINER }` : '' }`;
-      rule( selector, 'background', `center/cover no-repeat url("${ img.src }")` );
-      rule( `${ selector } > img`, 'display', 'none' );
+      style( container || colSlide, 'background', `center/cover no-repeat url("${ img.src }")` );
+      style( img, 'display', 'none' );
     }
   }
 
   /**
-   * Builds selector for a row or a col in the provided slide.
+   * Returns row elements in the provided slide.
    *
    * @param slide - A slide element.
-   * @param col   - Optional. Determines whether to build a selector for a col or a row.
+   *
+   * @return An array with row elements.
    */
-  function buildSelector( slide: HTMLElement, col?: boolean ): string {
-    return `#${ slide.id } > .${ CLASS_SLIDE_ROW }${ col ? ` > .${ CLASS_SLIDE_COL }` : '' }`;
+  function getRowsIn( slide: HTMLElement ): HTMLElement[] {
+    return queryAll<HTMLElement>( slide, `.${ CLASS_SLIDE_ROW }` );
   }
 
   /**
@@ -146,7 +154,7 @@ export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: Dim
    * @return An array with col elements.
    */
   function getColsIn( slide: HTMLElement ): HTMLElement[] {
-    return queryAll( slide.parentElement, buildSelector( slide, true ) );
+    return queryAll<HTMLElement>( slide, `.${ CLASS_SLIDE_COL }` );
   }
 
   /**
@@ -182,5 +190,5 @@ export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: Dim
   return {
     mount,
     destroy,
-  }
+  };
 }

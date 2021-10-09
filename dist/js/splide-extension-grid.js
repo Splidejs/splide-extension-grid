@@ -1,6 +1,6 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.3.0
+ * Version  : 0.3.1
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */
@@ -49,10 +49,10 @@
       });
     }
 
-    function unbind(targets, events) {
+    function unbind(targets, events, callback) {
       forEachEvent(targets, events, function (target, event2) {
         listeners = listeners.filter(function (listener) {
-          if (listener[0] === target && listener[1] === event2) {
+          if (listener[0] === target && listener[1] === event2 && (!callback || listener[2] === callback)) {
             target.removeEventListener(event2, listener[2], listener[3]);
             return false;
           }
@@ -108,12 +108,12 @@
     return typeof subject === "string";
   }
 
-  function isNull2(subject) {
-    return subject === null;
+  function isUndefined2(subject) {
+    return typeof subject === "undefined";
   }
 
-  function isHTMLElement2(subject) {
-    return subject instanceof HTMLElement;
+  function isNull2(subject) {
+    return subject === null;
   }
 
   function toArray2(value) {
@@ -133,10 +133,6 @@
 
   function slice2(arrayLike, start, end) {
     return arrayProto2.slice.call(arrayLike, start, end);
-  }
-
-  function find2(arrayLike, predicate) {
-    return slice2(arrayLike).filter(predicate)[0];
   }
 
   function toggleClass2(elm, classes, add) {
@@ -225,6 +221,21 @@
 
     parent && append2(parent, elm);
     return elm;
+  }
+
+  function style2(elm, prop, value) {
+    if (isUndefined2(value)) {
+      return getComputedStyle(elm)[prop];
+    }
+
+    if (!isNull2(value)) {
+      var style3 = elm.style;
+      value = "" + value;
+
+      if (style3[prop] !== value) {
+        style3[prop] = value;
+      }
+    }
   }
 
   function hasClass2(elm, className) {
@@ -322,53 +333,6 @@
     };
   }
 
-  function Style() {
-    var style3;
-    var sheet;
-
-    function mount() {
-      style3 = create2("style", {}, document.head);
-      sheet = style3.sheet;
-    }
-
-    function destroy() {
-      remove2(style3);
-      sheet = null;
-    }
-
-    function rule(selector, prop, value) {
-      var _sheet = sheet,
-          cssRules = _sheet.cssRules;
-      var cssRule = find2(cssRules, function (cssRule2) {
-        return isCSSStyleRule(cssRule2) && cssRule2.selectorText === selector;
-      }) || cssRules[sheet.insertRule(selector + "{}", 0)];
-
-      if (isCSSStyleRule(cssRule)) {
-        var style4 = cssRule.style;
-        value = "" + value;
-
-        if (style4[prop] !== value) {
-          style4[prop] = value;
-        }
-      }
-    }
-
-    function ruleBy(target, prop, value) {
-      rule("#" + (isHTMLElement2(target) ? target.id : target), prop, value);
-    }
-
-    function isCSSStyleRule(cssRule) {
-      return cssRule instanceof CSSStyleRule;
-    }
-
-    return {
-      mount: mount,
-      destroy: destroy,
-      rule: rule,
-      ruleBy: ruleBy
-    };
-  }
-
   function Layout2(Splide4, gridOptions, Dimension2) {
     var _EventInterface = EventInterface(Splide4),
         on = _EventInterface.on,
@@ -378,11 +342,8 @@
         options = Splide4.options;
     var resolve = Components2.Direction.resolve;
     var forEach3 = Components2.Slides.forEach;
-    var Style2 = Style();
-    var rule = Style2.rule;
 
     function mount() {
-      Style2.mount();
       layout();
 
       if (options.slideFocus) {
@@ -393,9 +354,12 @@
 
     function destroy() {
       forEach3(function (Slide2) {
-        toggleTabIndex(Slide2.slide, false);
+        var slide = Slide2.slide;
+        toggleTabIndex(slide, false);
+        getRowsIn(slide).concat(getColsIn(slide)).forEach(function (cell) {
+          removeAttribute2(cell, "style");
+        });
       });
-      Style2.destroy();
       destroyEvent();
     }
 
@@ -407,9 +371,8 @@
             rows = _Dimension2$get[0],
             cols = _Dimension2$get[1];
 
-        var rowSelector = buildSelector(slide);
-        layoutRow(rows, rowSelector);
-        layoutCol(cols, buildSelector(slide, true));
+        layoutRow(rows, slide);
+        layoutCol(cols, slide);
         getColsIn(Slide2.slide).forEach(function (colSlide, index) {
           colSlide.id = Slide2.slide.id + "-col" + pad2(index + 1);
           cover(colSlide);
@@ -417,21 +380,31 @@
       });
     }
 
-    function layoutRow(rows, selector) {
+    function layoutRow(rows, slide) {
       var rowGap = gridOptions.gap.row;
       var height = "calc(" + 100 / rows + "%" + (rowGap ? " - " + unit2(rowGap) + " * " + (rows - 1) / rows : "") + ")";
-      rule(selector, "height", height);
-      rule(selector, "display", "flex");
-      rule(selector, "margin", "0 0 " + unit2(rowGap) + " 0");
-      rule(selector, "padding", 0);
-      rule(selector + ":last-child", "marginBottom", 0);
+      getRowsIn(slide).forEach(function (rowElm, index, rowElms) {
+        style2(rowElm, "height", height);
+        style2(rowElm, "display", "flex");
+        style2(rowElm, "margin", "0 0 " + unit2(rowGap) + " 0");
+        style2(rowElm, "padding", 0);
+
+        if (index === rowElms.length - 1) {
+          style2(rowElm, "marginBottom", 0);
+        }
+      });
     }
 
-    function layoutCol(cols, selector) {
+    function layoutCol(cols, slide) {
       var colGap = gridOptions.gap.col;
       var width = "calc(" + 100 / cols + "%" + (colGap ? " - " + unit2(colGap) + " * " + (cols - 1) / cols : "") + ")";
-      rule(selector, "width", width);
-      rule(selector + ":not(:last-child)", resolve("marginRight"), unit2(colGap));
+      getColsIn(slide).forEach(function (colElm, index, colElms) {
+        style2(colElm, "width", width);
+
+        if (index !== colElms.length - 1) {
+          style2(colElm, resolve("marginRight"), unit2(colGap));
+        }
+      });
     }
 
     function cover(colSlide) {
@@ -439,18 +412,17 @@
       var img = child2(container || colSlide, "img");
 
       if (img && img.src) {
-        var selector = "#" + colSlide.id + (container ? " > ." + CLASS_CONTAINER : "");
-        rule(selector, "background", "center/cover no-repeat url(\"" + img.src + "\")");
-        rule(selector + " > img", "display", "none");
+        style2(container || colSlide, "background", "center/cover no-repeat url(\"" + img.src + "\")");
+        style2(img, "display", "none");
       }
     }
 
-    function buildSelector(slide, col) {
-      return "#" + slide.id + " > ." + CLASS_SLIDE_ROW + (col ? " > ." + CLASS_SLIDE_COL : "");
+    function getRowsIn(slide) {
+      return queryAll2(slide, "." + CLASS_SLIDE_ROW);
     }
 
     function getColsIn(slide) {
-      return queryAll2(slide.parentElement, buildSelector(slide, true));
+      return queryAll2(slide, "." + CLASS_SLIDE_COL);
     }
 
     function toggleTabIndex(slide, add) {
@@ -607,7 +579,7 @@
   }
   /*!
    * Splide.js
-   * Version  : 3.0.0
+   * Version  : 3.1.0
    * License  : MIT
    * Copyright: 2021 Naotoshi Fujita
    */

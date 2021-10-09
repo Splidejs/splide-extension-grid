@@ -162,7 +162,7 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
     const outerSlides: HTMLElement[] = [];
 
     let row = 0, col = 0;
-    let outerSlide: HTMLElement, rowSlide: HTMLElement, colSlide: HTMLElement;
+    let outerSlide: HTMLElement, rowSlide: HTMLElement;
 
     originalSlides.forEach( ( slide, index ) => {
       const [ rows, cols ] = Dimension.getAt( index );
@@ -176,7 +176,7 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
         rowSlide = buildRow( rows, slide, outerSlide );
       }
 
-      colSlide = buildCol( cols, slide, rowSlide );
+      buildCol( cols, slide, rowSlide );
 
       if ( ++col >= cols ) {
         col = 0;
@@ -244,5 +244,5 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
     setup,
     mount,
     destroy,
-  }
+  };
 }
