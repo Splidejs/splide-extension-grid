@@ -6,8 +6,10 @@
 <h1>Grid - Splide Extension</h1>
 
 <p>
-The extension of the <a href="https://github.com/Splidejs/splide">Splide</a> slider library for creating rows and cols in a slider.
+The extension for creating rows and cols in a <a href="https://github.com/Splidejs/splide">Splide</a> slider.
 </p>
+
+[![](https://data.jsdelivr.com/v1/package/npm/@splidejs/splide-extension-grid/badge)](https://www.jsdelivr.com/package/npm/@splidejs/splide-extension-grid)
 
 <p>
   <a href="https://splidejs.com/extensions/grid/">Getting Started</a>
