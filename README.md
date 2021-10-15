@@ -3,7 +3,7 @@
   <img alt="Splide" src="./images/logo.svg" width="70">
 </a>
 
-<h1>Video - Grid Extension</h1>
+<h1>Grid - Splide Extension</h1>
 
 <p>
 The extension of the <a href="https://github.com/Splidejs/splide">Splide</a> slider library for creating rows and cols in a slider.
