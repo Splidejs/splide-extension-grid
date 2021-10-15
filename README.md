@@ -12,6 +12,8 @@ The extension for creating rows and cols in a <a href="https://github.com/Splide
 [![](https://data.jsdelivr.com/v1/package/npm/@splidejs/splide-extension-grid/badge)](https://www.jsdelivr.com/package/npm/@splidejs/splide-extension-grid)
 
 <p>
+  <a href="https://splidejs.com/extensions/grid/#overview">Demo</a>
+  <br>
   <a href="https://splidejs.com/extensions/grid/">Getting Started</a>
   <br>
   <a href="https://splidejs.com/extensions/grid/#options">Options</a>
