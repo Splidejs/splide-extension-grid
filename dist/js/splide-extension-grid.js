@@ -1,6 +1,6 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.3.1
+ * Version  : 0.3.2
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */
@@ -167,9 +167,10 @@
     return selector ? children2(parent, selector)[0] : parent.firstElementChild;
   }
 
-  function forOwn2(object, iteratee) {
+  function forOwn2(object, iteratee, right) {
     if (object) {
       var keys = Object.keys(object);
+      keys = right ? keys.reverse() : keys;
 
       for (var i = 0; i < keys.length; i++) {
         var key = keys[i];
@@ -356,8 +357,12 @@
       forEach3(function (Slide2) {
         var slide = Slide2.slide;
         toggleTabIndex(slide, false);
-        getRowsIn(slide).concat(getColsIn(slide)).forEach(function (cell) {
+        getRowsIn(slide).forEach(function (cell) {
           removeAttribute2(cell, "style");
+        });
+        getColsIn(slide).forEach(function (colSlide) {
+          cover(colSlide, true);
+          removeAttribute2(colSlide, "style");
         });
       });
       destroyEvent();
@@ -375,7 +380,10 @@
         layoutCol(cols, slide);
         getColsIn(Slide2.slide).forEach(function (colSlide, index) {
           colSlide.id = Slide2.slide.id + "-col" + pad2(index + 1);
-          cover(colSlide);
+
+          if (Splide4.options.cover) {
+            cover(colSlide);
+          }
         });
       });
     }
@@ -407,13 +415,13 @@
       });
     }
 
-    function cover(colSlide) {
+    function cover(colSlide, uncover) {
       var container = child2(colSlide, "." + CLASS_CONTAINER);
       var img = child2(container || colSlide, "img");
 
       if (img && img.src) {
-        style2(container || colSlide, "background", "center/cover no-repeat url(\"" + img.src + "\")");
-        style2(img, "display", "none");
+        style2(container || colSlide, "background", uncover ? "" : "center/cover no-repeat url(\"" + img.src + "\")");
+        style2(img, "display", uncover ? "" : "none");
       }
     }
 
@@ -579,7 +587,7 @@
   }
   /*!
    * Splide.js
-   * Version  : 3.1.0
+   * Version  : 3.1.8
    * License  : MIT
    * Copyright: 2021 Naotoshi Fujita
    */

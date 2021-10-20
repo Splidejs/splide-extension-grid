@@ -53,8 +53,13 @@ export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: Dim
       const { slide } = Slide;
       toggleTabIndex( slide, false );
 
-      getRowsIn( slide ).concat( getColsIn( slide ) ).forEach( cell => {
+      getRowsIn( slide ).forEach( cell => {
         removeAttribute( cell, 'style' );
+      } );
+
+      getColsIn( slide ).forEach( colSlide => {
+        cover( colSlide, true );
+        removeAttribute( colSlide, 'style' );
       } );
     } );
 
@@ -74,7 +79,10 @@ export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: Dim
 
       getColsIn( Slide.slide ).forEach( ( colSlide, index ) => {
         colSlide.id = `${ Slide.slide.id }-col${ pad( index + 1 ) }`;
-        cover( colSlide );
+
+        if ( Splide.options.cover ) {
+          cover( colSlide );
+        }
       } );
     } );
   }
@@ -124,14 +132,15 @@ export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: Dim
    * Sets the background image to the col element by its own image element.
    *
    * @param colSlide - A col slide element.
+   * @param uncover  - Optional. If `true`, reset the cover mode.
    */
-  function cover( colSlide: HTMLElement ): void {
+  function cover( colSlide: HTMLElement, uncover?: boolean ): void {
     const container = child( colSlide, `.${ CLASS_CONTAINER }` );
     const img       = child<HTMLImageElement>( container || colSlide, 'img' );
 
     if ( img && img.src ) {
-      style( container || colSlide, 'background', `center/cover no-repeat url("${ img.src }")` );
-      style( img, 'display', 'none' );
+      style( container || colSlide, 'background', uncover ? '' : `center/cover no-repeat url("${ img.src }")` );
+      style( img, 'display', uncover ? '' : 'none' );
     }
   }
 

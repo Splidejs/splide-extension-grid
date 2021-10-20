@@ -22,8 +22,13 @@
           gap : {
             row: '0.5rem',
             col: '0.5rem',
-          }
+          },
         },
+        breakpoints: {
+          1000: {
+            destroy: true,
+          }
+        }
 			} );
 
 			splide.mount( window.splide.Extensions );
