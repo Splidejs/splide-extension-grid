@@ -34,4 +34,4 @@ export interface GridOptions {
         col?: number | string;
     };
 }
-//# sourceMappingURL=../../../../src/js/types/options.d.ts.map
+//# sourceMappingURL=../../../src/js/types/options.d.ts.map

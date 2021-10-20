@@ -4,4 +4,4 @@ declare global {
     }
 }
 export {};
-//# sourceMappingURL=../../../../src/js/build/default.d.ts.map
+//# sourceMappingURL=../../../src/js/build/default.d.ts.map

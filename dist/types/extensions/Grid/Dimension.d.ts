@@ -16,4 +16,4 @@ export interface DimensionComponent {
  * @return A Dimension sub component.
  */
 export declare function Dimension(options: GridOptions): DimensionComponent;
-//# sourceMappingURL=../../../../../src/js/extensions/Grid/Dimension.d.ts.map
+//# sourceMappingURL=../../../../src/js/extensions/Grid/Dimension.d.ts.map

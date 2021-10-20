@@ -22,4 +22,4 @@ export interface LayoutComponent {
  * @return A Layout sub component object.
  */
 export declare function Layout(Splide: Splide, gridOptions: GridOptions, Dimension: DimensionComponent): LayoutComponent;
-//# sourceMappingURL=../../../../../src/js/extensions/Grid/Layout.d.ts.map
+//# sourceMappingURL=../../../../src/js/extensions/Grid/Layout.d.ts.map

@@ -20,4 +20,4 @@ declare module '@splidejs/splide' {
  * @return A Video component object.
  */
 export declare function Grid(Splide: Splide, Components: Components, options: Options): BaseComponent;
-//# sourceMappingURL=../../../../../src/js/extensions/Grid/Grid.d.ts.map
+//# sourceMappingURL=../../../../src/js/extensions/Grid/Grid.d.ts.map
