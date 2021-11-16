@@ -1,6 +1,6 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.3.11
+ * Version  : 0.3.12
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */
@@ -116,6 +116,10 @@
     return subject === null;
   }
 
+  function isHTMLElement2(subject) {
+    return subject instanceof HTMLElement;
+  }
+
   function toArray2(value) {
     return isArray2(value) ? value : [value];
   }
@@ -154,7 +158,7 @@
   }
 
   function matches2(elm, selector) {
-    return (elm["msMatchesSelector"] || elm.matches).call(elm, selector);
+    return isHTMLElement2(elm) && (elm["msMatchesSelector"] || elm.matches).call(elm, selector);
   }
 
   function children2(parent, selector) {
@@ -587,7 +591,7 @@
   }
   /*!
    * Splide.js
-   * Version  : 3.4.0
+   * Version  : 3.4.2
    * License  : MIT
    * Copyright: 2021 Naotoshi Fujita
    */

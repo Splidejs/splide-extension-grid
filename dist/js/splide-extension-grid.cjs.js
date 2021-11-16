@@ -1,6 +1,6 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.3.11
+ * Version  : 0.3.12
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */
@@ -97,6 +97,9 @@ function isUndefined2(subject) {
 function isNull2(subject) {
   return subject === null;
 }
+function isHTMLElement2(subject) {
+  return subject instanceof HTMLElement;
+}
 
 // node_modules/@splidejs/splide/src/js/utils/array/toArray/toArray.ts
 function toArray2(value) {
@@ -145,7 +148,7 @@ function append2(parent, children3) {
 
 // node_modules/@splidejs/splide/src/js/utils/dom/matches/matches.ts
 function matches2(elm, selector) {
-  return (elm["msMatchesSelector"] || elm.matches).call(elm, selector);
+  return isHTMLElement2(elm) && (elm["msMatchesSelector"] || elm.matches).call(elm, selector);
 }
 
 // node_modules/@splidejs/splide/src/js/utils/dom/children/children.ts
@@ -516,7 +519,7 @@ function Grid(Splide4, Components2, options) {
 }
 /*!
  * Splide.js
- * Version  : 3.4.0
+ * Version  : 3.4.2
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */
