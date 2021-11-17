@@ -1,6 +1,6 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.3.13
+ * Version  : 0.3.14
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */
@@ -591,7 +591,7 @@
   }
   /*!
    * Splide.js
-   * Version  : 3.5.0
+   * Version  : 3.5.3
    * License  : MIT
    * Copyright: 2021 Naotoshi Fujita
    */

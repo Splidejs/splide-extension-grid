@@ -28,12 +28,24 @@ import { Layout as LayoutConstructor } from './Layout';
 
 
 /**
- * Lets the compiler know the type of video options.
+ * Lets the compiler know the Grid component.
  */
 declare module '@splidejs/splide' {
   interface Options {
     grid?: GridOptions | null | false;
   }
+
+  interface Components {
+    Grid?: GridComponent;
+  }
+}
+
+/**
+ * The interface for the Grid component.
+ *
+ * @since 0.3.14
+ */
+export interface GridComponent extends BaseComponent {
 }
 
 /**
@@ -47,7 +59,7 @@ declare module '@splidejs/splide' {
  *
  * @return A Video component object.
  */
-export function Grid( Splide: Splide, Components: Components, options: Options ): BaseComponent {
+export function Grid( Splide: Splide, Components: Components, options: Options ): GridComponent {
   const { on, off } = EventInterface( Splide );
   const { Elements } = Components;
 
