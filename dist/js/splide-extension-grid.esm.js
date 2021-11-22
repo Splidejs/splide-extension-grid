@@ -1,6 +1,6 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.3.15
+ * Version  : 0.3.16
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */
@@ -432,9 +432,7 @@ function Grid(Splide4, Components2, options) {
   function init() {
     assign2(gridOptions, options.grid || DEFAULTS2);
     if (shouldBuild()) {
-      if (isActive()) {
-        destroy();
-      }
+      destroy();
       push2(originalSlides, Elements2.slides);
       addClass2(Splide4.root, modifier);
       append2(Elements2.list, build());
@@ -446,18 +444,20 @@ function Grid(Splide4, Components2, options) {
     }
   }
   function destroy() {
-    const { slides } = Elements2;
-    Layout3.destroy();
-    originalSlides.forEach((slide) => {
-      removeClass2(slide, CLASS_SLIDE_COL);
-      append2(Elements2.list, slide);
-    });
-    remove2(slides);
-    removeClass2(Splide4.root, modifier);
-    empty2(slides);
-    push2(slides, originalSlides);
-    empty2(originalSlides);
-    off(EVENT_REFRESH);
+    if (isActive()) {
+      const { slides } = Elements2;
+      Layout3.destroy();
+      originalSlides.forEach((slide) => {
+        removeClass2(slide, CLASS_SLIDE_COL);
+        append2(Elements2.list, slide);
+      });
+      remove2(slides);
+      removeClass2(Splide4.root, modifier);
+      empty2(slides);
+      push2(slides, originalSlides);
+      empty2(originalSlides);
+      off(EVENT_REFRESH);
+    }
   }
   function refresh() {
     Splide4.refresh();
@@ -515,7 +515,7 @@ function Grid(Splide4, Components2, options) {
 }
 /*!
  * Splide.js
- * Version  : 3.5.8
+ * Version  : 3.6.1
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */

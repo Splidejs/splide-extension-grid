@@ -110,10 +110,7 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
     assign( gridOptions, options.grid || DEFAULTS );
 
     if ( shouldBuild() ) {
-      if ( isActive() ) {
-        destroy();
-      }
-
+      destroy();
       push( originalSlides, Elements.slides );
       addClass( Splide.root, modifier );
       append( Elements.list, build() );
@@ -130,22 +127,24 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
    * Deconstructs grids and restores original slides to the list element.
    */
   function destroy(): void {
-    const { slides } = Elements;
+    if ( isActive() ) {
+      const { slides } = Elements;
 
-    Layout.destroy();
+      Layout.destroy();
 
-    originalSlides.forEach( slide => {
-      removeClass( slide, CLASS_SLIDE_COL );
-      append( Elements.list, slide );
-    } );
+      originalSlides.forEach( slide => {
+        removeClass( slide, CLASS_SLIDE_COL );
+        append( Elements.list, slide );
+      } );
 
-    remove( slides );
-    removeClass( Splide.root, modifier );
-    empty( slides );
-    push( slides, originalSlides );
-    empty( originalSlides );
+      remove( slides );
+      removeClass( Splide.root, modifier );
+      empty( slides );
+      push( slides, originalSlides );
+      empty( originalSlides );
 
-    off( EVENT_REFRESH );
+      off( EVENT_REFRESH );
+    }
   }
 
   /**

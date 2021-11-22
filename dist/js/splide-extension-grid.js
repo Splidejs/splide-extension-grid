@@ -1,6 +1,6 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.3.15
+ * Version  : 0.3.16
  * License  : MIT
  * Copyright: 2021 Naotoshi Fujita
  */
@@ -482,10 +482,7 @@
       assign2(gridOptions, options.grid || DEFAULTS2);
 
       if (shouldBuild()) {
-        if (isActive()) {
-          destroy();
-        }
-
+        destroy();
         push2(originalSlides, Elements2.slides);
         addClass2(Splide4.root, modifier);
         append2(Elements2.list, build());
@@ -498,18 +495,20 @@
     }
 
     function destroy() {
-      var slides = Elements2.slides;
-      Layout3.destroy();
-      originalSlides.forEach(function (slide) {
-        removeClass2(slide, CLASS_SLIDE_COL);
-        append2(Elements2.list, slide);
-      });
-      remove2(slides);
-      removeClass2(Splide4.root, modifier);
-      empty2(slides);
-      push2(slides, originalSlides);
-      empty2(originalSlides);
-      off(EVENT_REFRESH);
+      if (isActive()) {
+        var slides = Elements2.slides;
+        Layout3.destroy();
+        originalSlides.forEach(function (slide) {
+          removeClass2(slide, CLASS_SLIDE_COL);
+          append2(Elements2.list, slide);
+        });
+        remove2(slides);
+        removeClass2(Splide4.root, modifier);
+        empty2(slides);
+        push2(slides, originalSlides);
+        empty2(originalSlides);
+        off(EVENT_REFRESH);
+      }
     }
 
     function refresh() {
@@ -591,7 +590,7 @@
   }
   /*!
    * Splide.js
-   * Version  : 3.5.8
+   * Version  : 3.6.1
    * License  : MIT
    * Copyright: 2021 Naotoshi Fujita
    */
