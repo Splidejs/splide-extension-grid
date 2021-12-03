@@ -1,6 +1,6 @@
 {
   "name": "@splidejs/splide-extension-grid",
-  "version": "0.3.17",
+  "version": "0.3.18",
   "description": "The extension of Splide for creating grid inside slides.",
   "author": "Naotoshi Fujita",
   "license": "MIT",
@@ -31,7 +31,7 @@
     "@babel/preset-env": "^7.15.4",
     "@rollup/plugin-babel": "^5.3.0",
     "@rollup/plugin-node-resolve": "^13.0.4",
-    "@splidejs/splide": "^3.6.8",
+    "@splidejs/splide": "^3.6.9",
     "@types/jest": "^27.0.1",
     "@typescript-eslint/eslint-plugin": "^4.31.0",
     "@typescript-eslint/parser": "^4.31.0",
