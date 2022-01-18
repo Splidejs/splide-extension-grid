@@ -1,8 +1,8 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.3.18
+ * Version  : 0.3.19
  * License  : MIT
- * Copyright: 2021 Naotoshi Fujita
+ * Copyright: 2022 Naotoshi Fujita
  */
 'use strict';
 
@@ -519,9 +519,9 @@ function Grid(Splide4, Components2, options) {
 }
 /*!
  * Splide.js
- * Version  : 3.6.9
+ * Version  : 3.6.10
  * License  : MIT
- * Copyright: 2021 Naotoshi Fujita
+ * Copyright: 2022 Naotoshi Fujita
  */
 
 exports.Grid = Grid;
