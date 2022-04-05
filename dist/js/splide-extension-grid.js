@@ -1,6 +1,6 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.3.20
+ * Version  : 0.4.0
  * License  : MIT
  * Copyright: 2022 Naotoshi Fujita
  */

@@ -1,6 +1,6 @@
 {
   "name": "@splidejs/splide-extension-grid",
-  "version": "0.3.20",
+  "version": "0.4.0",
   "description": "The extension of Splide for creating grid inside slides.",
   "author": "Naotoshi Fujita",
   "license": "MIT",
