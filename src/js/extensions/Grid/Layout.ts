@@ -6,7 +6,7 @@ import { DimensionComponent } from './Dimension';
 
 
 /**
- * The interface for the Layout sub component.
+ * The interface for the Layout subcomponent.
  *
  * @since 0.5.0
  */
@@ -16,15 +16,15 @@ export interface LayoutComponent {
 }
 
 /**
- * The sub components to layout grids.
+ * The subcomponent to layout grids.
  *
  * @since 0.5.0
  *
  * @param Splide      - A Splide instance.
  * @param gridOptions - Initialized grid options.
- * @param Dimension   - A Dimension sub component.
+ * @param Dimension   - A Dimension subcomponent.
  *
- * @return A Layout sub component object.
+ * @return A Layout subcomponent object.
  */
 export function Layout( Splide: Splide, gridOptions: GridOptions, Dimension: DimensionComponent ): LayoutComponent {
   const { on, destroy: destroyEvent } = EventInterface( Splide );

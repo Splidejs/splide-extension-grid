@@ -9,171 +9,40 @@
 })(function () {
   'use strict';
 
-  var PROJECT_CODE = "splide";
-
-  function isArray(subject) {
-    return Array.isArray(subject);
-  }
-
-  function toArray(value) {
-    return isArray(value) ? value : [value];
-  }
-
-  function forEach(values, iteratee) {
-    toArray(values).forEach(iteratee);
-  }
-
-  var EVENT_VISIBLE = "visible";
-  var EVENT_HIDDEN = "hidden";
-  var EVENT_REFRESH = "refresh";
-  var EVENT_UPDATED = "updated";
-  var EVENT_DESTROY = "destroy";
-
-  function EventInterface(Splide22) {
-    var event = Splide22.event;
-    var key = {};
-    var listeners = [];
-
-    function on(events, callback, priority) {
-      event.on(events, callback, key, priority);
-    }
-
-    function off(events) {
-      event.off(events, key);
-    }
-
-    function bind(targets, events, callback, options) {
-      forEachEvent(targets, events, function (target, event2) {
-        listeners.push([target, event2, callback, options]);
-        target.addEventListener(event2, callback, options);
-      });
-    }
-
-    function unbind(targets, events, callback) {
-      forEachEvent(targets, events, function (target, event2) {
-        listeners = listeners.filter(function (listener) {
-          if (listener[0] === target && listener[1] === event2 && (!callback || listener[2] === callback)) {
-            target.removeEventListener(event2, listener[2], listener[3]);
-            return false;
-          }
-
-          return true;
-        });
-      });
-    }
-
-    function forEachEvent(targets, events, iteratee) {
-      forEach(targets, function (target) {
-        if (target) {
-          events.split(" ").forEach(iteratee.bind(null, target));
-        }
-      });
-    }
-
-    function destroy() {
-      listeners = listeners.filter(function (data) {
-        return unbind(data[0], data[1]);
-      });
-      event.offBy(key);
-    }
-
-    event.on(EVENT_DESTROY, destroy, key);
-    return {
-      on: on,
-      off: off,
-      emit: event.emit,
-      bind: bind,
-      unbind: unbind,
-      destroy: destroy
-    };
-  }
-
-  var CLASS_ROOT = PROJECT_CODE;
-  var CLASS_SLIDE = PROJECT_CODE + "__slide";
-  var CLASS_CONTAINER = CLASS_SLIDE + "__container";
-
-  function empty2(array) {
+  function empty$1(array) {
     array.length = 0;
   }
 
-  function isObject2(subject) {
-    return !isNull2(subject) && typeof subject === "object";
+  function slice$1(arrayLike, start, end) {
+    return Array.prototype.slice.call(arrayLike, start, end);
   }
 
-  function isArray2(subject) {
-    return Array.isArray(subject);
+  function apply$1(func) {
+    return func.bind.apply(func, [null].concat(slice$1(arguments, 1)));
   }
 
-  function isString2(subject) {
-    return typeof subject === "string";
+  function typeOf$1(type, subject) {
+    return typeof subject === type;
   }
 
-  function isUndefined2(subject) {
-    return typeof subject === "undefined";
+  var isArray$1 = Array.isArray;
+  apply$1(typeOf$1, "function");
+  apply$1(typeOf$1, "string");
+  apply$1(typeOf$1, "undefined");
+
+  function toArray$1(value) {
+    return isArray$1(value) ? value : [value];
   }
 
-  function isNull2(subject) {
-    return subject === null;
+  function forEach$1(values, iteratee) {
+    toArray$1(values).forEach(iteratee);
   }
 
-  function isHTMLElement2(subject) {
-    return subject instanceof HTMLElement;
-  }
+  var ownKeys$1 = Object.keys;
 
-  function toArray2(value) {
-    return isArray2(value) ? value : [value];
-  }
-
-  function forEach2(values, iteratee) {
-    toArray2(values).forEach(iteratee);
-  }
-
-  function push2(array, items) {
-    array.push.apply(array, toArray2(items));
-    return array;
-  }
-
-  var arrayProto2 = Array.prototype;
-
-  function slice2(arrayLike, start, end) {
-    return arrayProto2.slice.call(arrayLike, start, end);
-  }
-
-  function toggleClass2(elm, classes, add) {
-    if (elm) {
-      forEach2(classes, function (name) {
-        if (name) {
-          elm.classList[add ? "add" : "remove"](name);
-        }
-      });
-    }
-  }
-
-  function addClass2(elm, classes) {
-    toggleClass2(elm, isString2(classes) ? classes.split(" ") : classes, true);
-  }
-
-  function append2(parent, children3) {
-    forEach2(children3, parent.appendChild.bind(parent));
-  }
-
-  function matches2(elm, selector) {
-    return isHTMLElement2(elm) && (elm["msMatchesSelector"] || elm.matches).call(elm, selector);
-  }
-
-  function children2(parent, selector) {
-    return parent ? slice2(parent.children).filter(function (child3) {
-      return matches2(child3, selector);
-    }) : [];
-  }
-
-  function child2(parent, selector) {
-    return selector ? children2(parent, selector)[0] : parent.firstElementChild;
-  }
-
-  function forOwn2(object, iteratee, right) {
+  function forOwn$1(object, iteratee, right) {
     if (object) {
-      var keys = Object.keys(object);
+      var keys = ownKeys$1(object);
       keys = right ? keys.reverse() : keys;
 
       for (var i = 0; i < keys.length; i++) {
@@ -190,108 +59,317 @@
     return object;
   }
 
-  function assign2(object) {
-    slice2(arguments, 1).forEach(function (source) {
-      forOwn2(source, function (value, key) {
+  function assign$1(object) {
+    slice$1(arguments, 1).forEach(function (source) {
+      forOwn$1(source, function (value, key) {
         object[key] = source[key];
       });
     });
     return object;
   }
 
-  function removeAttribute2(elm, attrs) {
+  var PROJECT_CODE$1 = "splide";
+
+  function EventBinder() {
+    var listeners = [];
+
+    function bind(targets, events, callback, options) {
+      forEachEvent(targets, events, function (target, event, namespace) {
+        var isEventTarget = ("addEventListener" in target);
+        var remover = isEventTarget ? target.removeEventListener.bind(target, event, callback, options) : target["removeListener"].bind(target, callback);
+        isEventTarget ? target.addEventListener(event, callback, options) : target["addListener"](callback);
+        listeners.push([target, event, namespace, callback, remover]);
+      });
+    }
+
+    function unbind(targets, events, callback) {
+      forEachEvent(targets, events, function (target, event, namespace) {
+        listeners = listeners.filter(function (listener) {
+          if (listener[0] === target && listener[1] === event && listener[2] === namespace && (!callback || listener[3] === callback)) {
+            listener[4]();
+            return false;
+          }
+
+          return true;
+        });
+      });
+    }
+
+    function dispatch(target, type, detail) {
+      var e;
+      var bubbles = true;
+
+      if (typeof CustomEvent === "function") {
+        e = new CustomEvent(type, {
+          bubbles: bubbles,
+          detail: detail
+        });
+      } else {
+        e = document.createEvent("CustomEvent");
+        e.initCustomEvent(type, bubbles, false, detail);
+      }
+
+      target.dispatchEvent(e);
+      return e;
+    }
+
+    function forEachEvent(targets, events, iteratee) {
+      forEach$1(targets, function (target) {
+        target && forEach$1(events, function (events2) {
+          events2.split(" ").forEach(function (eventNS) {
+            var fragment = eventNS.split(".");
+            iteratee(target, fragment[0], fragment[1]);
+          });
+        });
+      });
+    }
+
+    function destroy() {
+      listeners.forEach(function (data) {
+        data[4]();
+      });
+      empty$1(listeners);
+    }
+
+    return {
+      bind: bind,
+      unbind: unbind,
+      dispatch: dispatch,
+      destroy: destroy
+    };
+  }
+
+  var EVENT_VISIBLE = "visible";
+  var EVENT_HIDDEN = "hidden";
+  var EVENT_REFRESH = "refresh";
+  var EVENT_UPDATED = "updated";
+  var EVENT_DESTROY = "destroy";
+
+  function EventInterface(Splide2) {
+    var bus = Splide2 ? Splide2.event.bus : document.createDocumentFragment();
+    var binder = EventBinder();
+
+    function on(events, callback) {
+      binder.bind(bus, toArray$1(events).join(" "), function (e) {
+        callback.apply(callback, isArray$1(e.detail) ? e.detail : []);
+      });
+    }
+
+    function emit(event) {
+      binder.dispatch(bus, event, slice$1(arguments, 1));
+    }
+
+    if (Splide2) {
+      Splide2.event.on(EVENT_DESTROY, binder.destroy);
+    }
+
+    return assign$1(binder, {
+      bus: bus,
+      on: on,
+      off: apply$1(binder.unbind, bus),
+      emit: emit
+    });
+  }
+
+  var CLASS_ROOT = PROJECT_CODE$1;
+  var CLASS_SLIDE = PROJECT_CODE$1 + "__slide";
+  var CLASS_CONTAINER = CLASS_SLIDE + "__container";
+
+  function empty(array) {
+    array.length = 0;
+  }
+
+  function slice(arrayLike, start, end) {
+    return Array.prototype.slice.call(arrayLike, start, end);
+  }
+
+  function apply(func) {
+    return func.bind.apply(func, [null].concat(slice(arguments, 1)));
+  }
+
+  function typeOf(type, subject) {
+    return typeof subject === type;
+  }
+
+  function isObject(subject) {
+    return !isNull(subject) && typeOf("object", subject);
+  }
+
+  var isArray = Array.isArray;
+  apply(typeOf, "function");
+  var isString = apply(typeOf, "string");
+  var isUndefined = apply(typeOf, "undefined");
+
+  function isNull(subject) {
+    return subject === null;
+  }
+
+  function isHTMLElement(subject) {
+    return subject instanceof HTMLElement;
+  }
+
+  function toArray(value) {
+    return isArray(value) ? value : [value];
+  }
+
+  function forEach(values, iteratee) {
+    toArray(values).forEach(iteratee);
+  }
+
+  function push(array, items) {
+    array.push.apply(array, toArray(items));
+    return array;
+  }
+
+  function toggleClass(elm, classes, add) {
     if (elm) {
-      forEach2(attrs, function (attr) {
-        elm.removeAttribute(attr);
+      forEach(classes, function (name) {
+        if (name) {
+          elm.classList[add ? "add" : "remove"](name);
+        }
       });
     }
   }
 
-  function setAttribute2(elm, attrs, value) {
-    if (isObject2(attrs)) {
-      forOwn2(attrs, function (value2, name) {
-        setAttribute2(elm, name, value2);
+  function addClass(elm, classes) {
+    toggleClass(elm, isString(classes) ? classes.split(" ") : classes, true);
+  }
+
+  function append(parent, children) {
+    forEach(children, parent.appendChild.bind(parent));
+  }
+
+  function matches(elm, selector) {
+    return isHTMLElement(elm) && (elm["msMatchesSelector"] || elm.matches).call(elm, selector);
+  }
+
+  function children(parent, selector) {
+    var children2 = parent ? slice(parent.children) : [];
+    return selector ? children2.filter(function (child) {
+      return matches(child, selector);
+    }) : children2;
+  }
+
+  function child(parent, selector) {
+    return selector ? children(parent, selector)[0] : parent.firstElementChild;
+  }
+
+  var ownKeys = Object.keys;
+
+  function forOwn(object, iteratee, right) {
+    if (object) {
+      var keys = ownKeys(object);
+      keys = right ? keys.reverse() : keys;
+
+      for (var i = 0; i < keys.length; i++) {
+        var key = keys[i];
+
+        if (key !== "__proto__") {
+          if (iteratee(object[key], key) === false) {
+            break;
+          }
+        }
+      }
+    }
+
+    return object;
+  }
+
+  function assign(object) {
+    slice(arguments, 1).forEach(function (source) {
+      forOwn(source, function (value, key) {
+        object[key] = source[key];
+      });
+    });
+    return object;
+  }
+
+  function removeAttribute(elms, attrs) {
+    forEach(elms, function (elm) {
+      forEach(attrs, function (attr) {
+        elm && elm.removeAttribute(attr);
+      });
+    });
+  }
+
+  function setAttribute(elms, attrs, value) {
+    if (isObject(attrs)) {
+      forOwn(attrs, function (value2, name) {
+        setAttribute(elms, name, value2);
       });
     } else {
-      isNull2(value) ? removeAttribute2(elm, attrs) : elm.setAttribute(attrs, String(value));
+      forEach(elms, function (elm) {
+        isNull(value) || value === "" ? removeAttribute(elm, attrs) : elm.setAttribute(attrs, String(value));
+      });
     }
   }
 
-  function create2(tag, attrs, parent) {
+  function create(tag, attrs, parent) {
     var elm = document.createElement(tag);
 
     if (attrs) {
-      isString2(attrs) ? addClass2(elm, attrs) : setAttribute2(elm, attrs);
+      isString(attrs) ? addClass(elm, attrs) : setAttribute(elm, attrs);
     }
 
-    parent && append2(parent, elm);
+    parent && append(parent, elm);
     return elm;
   }
 
-  function style2(elm, prop, value) {
-    if (isUndefined2(value)) {
+  function style(elm, prop, value) {
+    if (isUndefined(value)) {
       return getComputedStyle(elm)[prop];
     }
 
-    if (!isNull2(value)) {
-      var style3 = elm.style;
-      value = "" + value;
-
-      if (style3[prop] !== value) {
-        style3[prop] = value;
-      }
+    if (!isNull(value)) {
+      elm.style[prop] = "" + value;
     }
   }
 
-  function hasClass2(elm, className) {
+  function hasClass(elm, className) {
     return elm && elm.classList.contains(className);
   }
 
-  function remove2(nodes) {
-    forEach2(nodes, function (node) {
+  function remove(nodes) {
+    forEach(nodes, function (node) {
       if (node && node.parentNode) {
         node.parentNode.removeChild(node);
       }
     });
   }
 
-  function queryAll2(parent, selector) {
-    return slice2(parent.querySelectorAll(selector));
+  function queryAll(parent, selector) {
+    return selector ? slice(parent.querySelectorAll(selector)) : [];
   }
 
-  function removeClass2(elm, classes) {
-    toggleClass2(elm, classes, false);
+  function removeClass(elm, classes) {
+    toggleClass(elm, classes, false);
   }
 
-  function unit2(value) {
-    return isString2(value) ? value : value ? value + "px" : "";
+  function unit(value) {
+    return isString(value) ? value : value ? value + "px" : "";
   }
 
-  var PROJECT_CODE2 = "splide";
+  var PROJECT_CODE = "splide";
 
-  function assert2(condition, message) {
-    if (message === void 0) {
-      message = "";
-    }
-
+  function assert(condition, message) {
     if (!condition) {
-      throw new Error("[" + PROJECT_CODE2 + "] " + message);
+      throw new Error("[" + PROJECT_CODE + "] " + (message || ""));
     }
   }
 
-  var min2 = Math.min,
-      max2 = Math.max,
-      floor2 = Math.floor,
-      ceil2 = Math.ceil,
-      abs2 = Math.abs;
+  var min = Math.min,
+      max = Math.max,
+      floor = Math.floor,
+      ceil = Math.ceil,
+      abs = Math.abs;
 
-  function pad2(number) {
+  function pad(number) {
     return number < 10 ? "0" + number : "" + number;
   }
 
   var CLASS_SLIDE_ROW = CLASS_SLIDE + "__row";
   var CLASS_SLIDE_COL = CLASS_SLIDE + "--col";
-  var DEFAULTS2 = {
+  var DEFAULTS = {
     rows: 1,
     cols: 1,
     dimensions: [],
@@ -303,12 +381,12 @@
       var rows = options.rows,
           cols = options.cols,
           dimensions = options.dimensions;
-      return isArray2(dimensions) && dimensions.length ? dimensions : [[rows, cols]];
+      return isArray(dimensions) && dimensions.length ? dimensions : [[rows, cols]];
     }
 
     function get(index) {
       var dimensions = normalize();
-      return dimensions[min2(index, dimensions.length - 1)];
+      return dimensions[min(index, dimensions.length - 1)];
     }
 
     function getAt(index) {
@@ -328,7 +406,7 @@
         }
       }
 
-      assert2(rows && cols, "Invalid dimension");
+      assert(rows && cols, "Invalid dimension");
       return [rows, cols];
     }
 
@@ -338,15 +416,15 @@
     };
   }
 
-  function Layout2(Splide4, gridOptions, Dimension2) {
-    var _EventInterface = EventInterface(Splide4),
+  function Layout(Splide2, gridOptions, Dimension) {
+    var _EventInterface = EventInterface(Splide2),
         on = _EventInterface.on,
         destroyEvent = _EventInterface.destroy;
 
-    var Components2 = Splide4.Components,
-        options = Splide4.options;
-    var resolve = Components2.Direction.resolve;
-    var forEach3 = Components2.Slides.forEach;
+    var Components = Splide2.Components,
+        options = Splide2.options;
+    var resolve = Components.Direction.resolve;
+    var forEach = Components.Slides.forEach;
 
     function mount() {
       layout();
@@ -358,34 +436,34 @@
     }
 
     function destroy() {
-      forEach3(function (Slide2) {
-        var slide = Slide2.slide;
+      forEach(function (Slide) {
+        var slide = Slide.slide;
         toggleTabIndex(slide, false);
         getRowsIn(slide).forEach(function (cell) {
-          removeAttribute2(cell, "style");
+          removeAttribute(cell, "style");
         });
         getColsIn(slide).forEach(function (colSlide) {
           cover(colSlide, true);
-          removeAttribute2(colSlide, "style");
+          removeAttribute(colSlide, "style");
         });
       });
       destroyEvent();
     }
 
     function layout() {
-      forEach3(function (Slide2) {
-        var slide = Slide2.slide;
+      forEach(function (Slide) {
+        var slide = Slide.slide;
 
-        var _Dimension2$get = Dimension2.get(Slide2.isClone ? Slide2.slideIndex : Slide2.index),
-            rows = _Dimension2$get[0],
-            cols = _Dimension2$get[1];
+        var _Dimension$get = Dimension.get(Slide.isClone ? Slide.slideIndex : Slide.index),
+            rows = _Dimension$get[0],
+            cols = _Dimension$get[1];
 
         layoutRow(rows, slide);
         layoutCol(cols, slide);
-        getColsIn(Slide2.slide).forEach(function (colSlide, index) {
-          colSlide.id = Slide2.slide.id + "-col" + pad2(index + 1);
+        getColsIn(Slide.slide).forEach(function (colSlide, index) {
+          colSlide.id = Slide.slide.id + "-col" + pad(index + 1);
 
-          if (Splide4.options.cover) {
+          if (Splide2.options.cover) {
             cover(colSlide);
           }
         });
@@ -394,61 +472,61 @@
 
     function layoutRow(rows, slide) {
       var rowGap = gridOptions.gap.row;
-      var height = "calc(" + 100 / rows + "%" + (rowGap ? " - " + unit2(rowGap) + " * " + (rows - 1) / rows : "") + ")";
+      var height = "calc(" + 100 / rows + "%" + (rowGap ? " - " + unit(rowGap) + " * " + (rows - 1) / rows : "") + ")";
       getRowsIn(slide).forEach(function (rowElm, index, rowElms) {
-        style2(rowElm, "height", height);
-        style2(rowElm, "display", "flex");
-        style2(rowElm, "margin", "0 0 " + unit2(rowGap) + " 0");
-        style2(rowElm, "padding", 0);
+        style(rowElm, "height", height);
+        style(rowElm, "display", "flex");
+        style(rowElm, "margin", "0 0 " + unit(rowGap) + " 0");
+        style(rowElm, "padding", 0);
 
         if (index === rowElms.length - 1) {
-          style2(rowElm, "marginBottom", 0);
+          style(rowElm, "marginBottom", 0);
         }
       });
     }
 
     function layoutCol(cols, slide) {
       var colGap = gridOptions.gap.col;
-      var width = "calc(" + 100 / cols + "%" + (colGap ? " - " + unit2(colGap) + " * " + (cols - 1) / cols : "") + ")";
+      var width = "calc(" + 100 / cols + "%" + (colGap ? " - " + unit(colGap) + " * " + (cols - 1) / cols : "") + ")";
       getColsIn(slide).forEach(function (colElm, index, colElms) {
-        style2(colElm, "width", width);
+        style(colElm, "width", width);
 
         if (index !== colElms.length - 1) {
-          style2(colElm, resolve("marginRight"), unit2(colGap));
+          style(colElm, resolve("marginRight"), unit(colGap));
         }
       });
     }
 
     function cover(colSlide, uncover) {
-      var container = child2(colSlide, "." + CLASS_CONTAINER);
-      var img = child2(container || colSlide, "img");
+      var container = child(colSlide, "." + CLASS_CONTAINER);
+      var img = child(container || colSlide, "img");
 
       if (img && img.src) {
-        style2(container || colSlide, "background", uncover ? "" : "center/cover no-repeat url(\"" + img.src + "\")");
-        style2(img, "display", uncover ? "" : "none");
+        style(container || colSlide, "background", uncover ? "" : "center/cover no-repeat url(\"" + img.src + "\")");
+        style(img, "display", uncover ? "" : "none");
       }
     }
 
     function getRowsIn(slide) {
-      return queryAll2(slide, "." + CLASS_SLIDE_ROW);
+      return queryAll(slide, "." + CLASS_SLIDE_ROW);
     }
 
     function getColsIn(slide) {
-      return queryAll2(slide, "." + CLASS_SLIDE_COL);
+      return queryAll(slide, "." + CLASS_SLIDE_COL);
     }
 
     function toggleTabIndex(slide, add) {
       getColsIn(slide).forEach(function (colSlide) {
-        setAttribute2(colSlide, "tabindex", add ? 0 : null);
+        setAttribute(colSlide, "tabindex", add ? 0 : null);
       });
     }
 
-    function onVisible(Slide2) {
-      toggleTabIndex(Slide2.slide, true);
+    function onVisible(Slide) {
+      toggleTabIndex(Slide.slide, true);
     }
 
-    function onHidden(Slide2) {
-      toggleTabIndex(Slide2.slide, false);
+    function onHidden(Slide) {
+      toggleTabIndex(Slide.slide, false);
     }
 
     return {
@@ -457,20 +535,20 @@
     };
   }
 
-  function Grid(Splide4, Components2, options) {
-    var _EventInterface2 = EventInterface(Splide4),
+  function Grid(Splide2, Components2, options) {
+    var _EventInterface2 = EventInterface(Splide2),
         on = _EventInterface2.on,
         off = _EventInterface2.off;
 
-    var Elements2 = Components2.Elements;
+    var Elements = Components2.Elements;
     var gridOptions = {};
-    var Dimension2 = Dimension(gridOptions);
-    var Layout3 = Layout2(Splide4, gridOptions, Dimension2);
+    var Dimension$1 = Dimension(gridOptions);
+    var Layout$1 = Layout(Splide2, gridOptions, Dimension$1);
     var modifier = CLASS_ROOT + "--grid";
     var originalSlides = [];
 
     function setup() {
-      options.grid = assign2({}, DEFAULTS2, options.grid || {});
+      options.grid = assign({}, DEFAULTS, options.grid || {});
     }
 
     function mount() {
@@ -479,13 +557,13 @@
     }
 
     function init() {
-      assign2(gridOptions, options.grid || DEFAULTS2);
+      assign(gridOptions, options.grid || DEFAULTS);
 
       if (shouldBuild()) {
         destroy();
-        push2(originalSlides, Elements2.slides);
-        addClass2(Splide4.root, modifier);
-        append2(Elements2.list, build());
+        push(originalSlides, Elements.slides);
+        addClass(Splide2.root, modifier);
+        append(Elements.list, build());
         on(EVENT_REFRESH, layout);
         refresh();
       } else if (isActive()) {
@@ -496,28 +574,28 @@
 
     function destroy() {
       if (isActive()) {
-        var slides = Elements2.slides;
-        Layout3.destroy();
+        var slides = Elements.slides;
+        Layout$1.destroy();
         originalSlides.forEach(function (slide) {
-          removeClass2(slide, CLASS_SLIDE_COL);
-          append2(Elements2.list, slide);
+          removeClass(slide, CLASS_SLIDE_COL);
+          append(Elements.list, slide);
         });
-        remove2(slides);
-        removeClass2(Splide4.root, modifier);
-        empty2(slides);
-        push2(slides, originalSlides);
-        empty2(originalSlides);
+        remove(slides);
+        removeClass(Splide2.root, modifier);
+        empty(slides);
+        push(slides, originalSlides);
+        empty(originalSlides);
         off(EVENT_REFRESH);
       }
     }
 
     function refresh() {
-      Splide4.refresh();
+      Splide2.refresh();
     }
 
     function layout() {
       if (isActive()) {
-        Layout3.mount();
+        Layout$1.mount();
       }
     }
 
@@ -527,13 +605,13 @@
           col = 0;
       var outerSlide, rowSlide;
       originalSlides.forEach(function (slide, index) {
-        var _Dimension2$getAt = Dimension2.getAt(index),
-            rows = _Dimension2$getAt[0],
-            cols = _Dimension2$getAt[1];
+        var _Dimension$1$getAt = Dimension$1.getAt(index),
+            rows = _Dimension$1$getAt[0],
+            cols = _Dimension$1$getAt[1];
 
         if (!col) {
           if (!row) {
-            outerSlide = create2(slide.tagName, CLASS_SLIDE);
+            outerSlide = create(slide.tagName, CLASS_SLIDE);
             outerSlides.push(outerSlide);
           }
 
@@ -552,12 +630,12 @@
 
     function buildRow(rows, slide, outerSlide) {
       var tag = slide.tagName.toLowerCase() === "li" ? "ul" : "div";
-      return create2(tag, CLASS_SLIDE_ROW, outerSlide);
+      return create(tag, CLASS_SLIDE_ROW, outerSlide);
     }
 
     function buildCol(cols, slide, rowSlide) {
-      addClass2(slide, CLASS_SLIDE_COL);
-      append2(rowSlide, slide);
+      addClass(slide, CLASS_SLIDE_COL);
+      append(rowSlide, slide);
       return slide;
     }
 
@@ -566,14 +644,14 @@
         var rows = gridOptions.rows,
             cols = gridOptions.cols,
             dimensions = gridOptions.dimensions;
-        return rows > 1 || cols > 1 || isArray2(dimensions) && dimensions.length > 0;
+        return rows > 1 || cols > 1 || isArray(dimensions) && dimensions.length > 0;
       }
 
       return false;
     }
 
     function isActive() {
-      return hasClass2(Splide4.root, modifier);
+      return hasClass(Splide2.root, modifier);
     }
 
     return {
@@ -588,11 +666,4 @@
     window.splide.Extensions = window.splide.Extensions || {};
     window.splide.Extensions.Grid = Grid;
   }
-  /*!
-   * Splide.js
-   * Version  : 3.6.11
-   * License  : MIT
-   * Copyright: 2022 Naotoshi Fujita
-   */
-
 });

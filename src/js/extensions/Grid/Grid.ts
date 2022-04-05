@@ -1,5 +1,6 @@
 import {
-  BaseComponent, CLASS_ROOT,
+  BaseComponent,
+  CLASS_ROOT,
   CLASS_SLIDE,
   Components,
   EVENT_REFRESH,
@@ -13,12 +14,12 @@ import {
   append,
   assign,
   create,
-  remove,
-  removeClass,
-  isArray,
-  push,
   empty,
   hasClass,
+  isArray,
+  push,
+  remove,
+  removeClass,
 } from '@splidejs/splide/src/js/utils';
 import { CLASS_SLIDE_COL, CLASS_SLIDE_ROW } from '../../constants/classes';
 import { DEFAULTS } from '../../constants/defaults';
