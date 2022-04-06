@@ -1,6 +1,6 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.4.0
+ * Version  : 0.4.1
  * License  : MIT
  * Copyright: 2022 Naotoshi Fujita
  */
@@ -268,6 +268,12 @@ function assign(object) {
   return object;
 }
 
+function omit(object, keys) {
+  toArray(keys || ownKeys(object)).forEach((key) => {
+    delete object[key];
+  });
+}
+
 function removeAttribute(elms, attrs) {
   forEach(elms, (elm) => {
     forEach(attrs, (attr) => {
@@ -486,20 +492,19 @@ function Grid(Splide2, Components2, options) {
   const Layout$1 = Layout(Splide2, gridOptions, Dimension$1);
   const modifier = `${CLASS_ROOT}--grid`;
   const originalSlides = [];
-  function setup() {
-    options.grid = assign({}, DEFAULTS, options.grid || {});
-  }
   function mount() {
     init();
     on(EVENT_UPDATED, init);
   }
   function init() {
-    assign(gridOptions, options.grid || DEFAULTS);
+    omit(gridOptions);
+    assign(gridOptions, DEFAULTS, options.grid || {});
     if (shouldBuild()) {
       destroy();
       push(originalSlides, Elements.slides);
       addClass(Splide2.root, modifier);
       append(Elements.list, build());
+      off(EVENT_REFRESH);
       on(EVENT_REFRESH, layout);
       refresh();
     } else if (isActive()) {
@@ -572,7 +577,6 @@ function Grid(Splide2, Components2, options) {
     return hasClass(Splide2.root, modifier);
   }
   return {
-    setup,
     mount,
     destroy
   };

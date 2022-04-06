@@ -17,6 +17,7 @@ import {
   empty,
   hasClass,
   isArray,
+  omit,
   push,
   remove,
   removeClass,
@@ -70,12 +71,12 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
   const gridOptions: GridOptions = {};
 
   /**
-   * The Dimension sub component.
+   * The Dimension subcomponent.
    */
   const Dimension = DimensionConstructor( gridOptions );
 
   /**
-   * The Layout sub component.
+   * The Layout subcomponent.
    */
   const Layout = LayoutConstructor( Splide, gridOptions, Dimension );
 
@@ -90,13 +91,6 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
   const originalSlides: HTMLElement[] = [];
 
   /**
-   * Initializes the grid options.
-   */
-  function setup(): void {
-    options.grid = assign( {}, DEFAULTS, options.grid || {} );
-  }
-
-  /**
    * Called when the extension is mounted.
    */
   function mount(): void {
@@ -108,13 +102,15 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
    * Initializes the extension when the slider gets active, or options are updated.
    */
   function init(): void {
-    assign( gridOptions, options.grid || DEFAULTS );
+    omit( gridOptions );
+    assign( gridOptions, DEFAULTS, options.grid || {} );
 
     if ( shouldBuild() ) {
       destroy();
       push( originalSlides, Elements.slides );
       addClass( Splide.root, modifier );
       append( Elements.list, build() );
+      off( EVENT_REFRESH );
       on( EVENT_REFRESH, layout );
       refresh();
     } else if ( isActive() ) {
@@ -125,7 +121,7 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
 
   /**
    * Destroys the extension.
-   * Deconstructs grids and restores original slides to the list element.
+   * Deconstructs grid and restores original slides to the list element.
    */
   function destroy(): void {
     if ( isActive() ) {
@@ -143,7 +139,6 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
       empty( slides );
       push( slides, originalSlides );
       empty( originalSlides );
-
       off( EVENT_REFRESH );
     }
   }
@@ -156,7 +151,7 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
   }
 
   /**
-   * Layouts row and col slides via the Layout sub component.
+   * Layouts row and col slides via the Layout subcomponent.
    * The extension calls this after requesting ths slider to refresh it.
    */
   function layout(): void {
@@ -253,7 +248,6 @@ export function Grid( Splide: Splide, Components: Components, options: Options )
   }
 
   return {
-    setup,
     mount,
     destroy,
   };

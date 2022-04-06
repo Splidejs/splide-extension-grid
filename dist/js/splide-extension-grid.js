@@ -1,6 +1,6 @@
 /*!
  * @splidejs/splide-extension-grid
- * Version  : 0.4.0
+ * Version  : 0.4.1
  * License  : MIT
  * Copyright: 2022 Naotoshi Fujita
  */
@@ -284,6 +284,12 @@
     return object;
   }
 
+  function omit(object, keys) {
+    toArray(keys || ownKeys(object)).forEach(function (key) {
+      delete object[key];
+    });
+  }
+
   function removeAttribute(elms, attrs) {
     forEach(elms, function (elm) {
       forEach(attrs, function (attr) {
@@ -547,23 +553,21 @@
     var modifier = CLASS_ROOT + "--grid";
     var originalSlides = [];
 
-    function setup() {
-      options.grid = assign({}, DEFAULTS, options.grid || {});
-    }
-
     function mount() {
       init();
       on(EVENT_UPDATED, init);
     }
 
     function init() {
-      assign(gridOptions, options.grid || DEFAULTS);
+      omit(gridOptions);
+      assign(gridOptions, DEFAULTS, options.grid || {});
 
       if (shouldBuild()) {
         destroy();
         push(originalSlides, Elements.slides);
         addClass(Splide2.root, modifier);
         append(Elements.list, build());
+        off(EVENT_REFRESH);
         on(EVENT_REFRESH, layout);
         refresh();
       } else if (isActive()) {
@@ -655,7 +659,6 @@
     }
 
     return {
-      setup: setup,
       mount: mount,
       destroy: destroy
     };
