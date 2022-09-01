@@ -13,15 +13,14 @@ function buildScript( minify ) {
     plugins: [
       resolve(),
       esbuild( {
-        experimentalBundling: true,
-        minify              : false,
+        minify: false,
       } ),
       babel.getBabelOutputPlugin( {
         configFile: path.resolve( __dirname, '../.babelrc' ),
         allowAllFormats: true,
       } ),
       esbuild( { minify } ),
-    ]
+    ],
   } ).then( bundle => {
     return bundle.write( {
       banner,
